@@ -44,7 +44,7 @@ I'm starting to write this at the point where the shapes are slowly
 emerging from the fog.
 
 My primary motive is selfish. Explaining something forces me to learn
-it more thorougly. Plus I expect that if I write something with
+it more thoroughly. Plus I expect that if I write something with
 mistakes, other people will be eager to point them out and correct
 me. Is that a social-engineering variation of meta-programming? Next
 question, please. :)
@@ -91,7 +91,7 @@ about "hygiene".]
 4. Finally, we'll realize that our macros could be smarter when
 they're used in error. Normal Racket functions can optionally have
 contracts and types. These can catch mistakes and provide clear,
-useful error messages. It would be great if there were somthing
+useful error messages. It would be great if there were something
 similar for macros, and there is. One of the more-recent Racket macro
 enhancements is @racket[syntax-parse].
 
@@ -250,8 +250,8 @@ What's going on here?  First we take the input syntax, and give it to
 (syntax->datum #'(reverse-me "backwards" "am" "i" values))
 ]
 
-Using @racket[cdr] slics off the first item of the list,
-@racket[reverse-me], leaving the rmainder:
+Using @racket[cdr] slices off the first item of the list,
+@racket[reverse-me], leaving the remainder:
 @racket[("backwards" "am" "i" values)]. Passing that to
 @racket[reverse] changes it to @racket[(values "i" "am" "backwards")]:
 
@@ -379,7 +379,7 @@ and @racket[cadddr] and arrange them into a @racket[cond] form:
                           [else ,(cadddr xs)]))
 ]
 
-So that works, but using @racket[cdddr] etc. to destructure a list is
+So that works, but using @racket[cadddr] etc. to destructure a list is
 painful and error-prone. Maybe you know Racket's @racket[match]?
 Using that would let us do pattern-matching.
 
@@ -411,7 +411,7 @@ We can write:
 ]
 
 But wait, we can't. It's complaining that @racket[match] isn't
-defined. We havne't required the @racket[racket/match] module?
+defined. We haven't required the @racket[racket/match] module?
 
 It turns out we haven't. Remember, this transformer function is
 working at compile time, not run time. And at compile time, only
@@ -446,7 +446,7 @@ for writing syntax transformers. We can write these transformer
 functions using familiar Racket code. The semi-bad news is that the
 familiarity can make it easy to forget that we're not working at run
 time. Sometimes that's important to remember. For example only
-@racket[racket/base] is required for us automtically. If we need other
+@racket[racket/base] is required for us automatically. If we need other
 modules, we have to require them, and we have to require them
 @italic{for compile time} using @racket[(require (for-syntax))].
 
@@ -456,7 +456,7 @@ modules, we have to require them, and we have to require them
 
 Most useful syntax transformers work by taking some input syntax, and
 rearranging the pieces into something else.  As we saw, this is
-possible but tedious using list accessors such as @racket[cdddr]. It's
+possible but tedious using list accessors such as @racket[cadddr]. It's
 more convenient and less error-prone to use pattern-matching.
 
 @margin-note{Historically, @racket[syntax-case] and
@@ -490,9 +490,9 @@ Here's what it looks like using @racket[syntax-case]:
 (our-if-using-syntax-case #t "true" "false")
 ]
 
-Prety similar, huh?  The pattern part looks almost exactly the
+Pretty similar, huh?  The pattern part looks almost exactly the
 same. The "template" part---where we specify the new syntax---is
-simpler. We don't need to do quasiquoting and unquoting. We don't need
+simpler. We don't need to do quasi-quoting and unquoting. We don't need
 to use @racket[datum->syntax]. We simply supply a template, which uses
 variables from the pattern.
 
@@ -507,7 +507,7 @@ into @racket[syntax-case]. It's called @racket[define-syntax-rule]:
 ]
 
 Here's the thing about @racket[define-syntax-rule]. Because it's so
-simple, @racket[define-syntax-rule] is ofen the first thing people are
+simple, @racket[define-syntax-rule] is often the first thing people are
 taught about macros. But it's almost deceptively simple. It looks so
 much like defining a normal run time function---yet it's not. It's
 working at compile time, not run time. Worse, the moment you want to
@@ -531,7 +531,7 @@ Instead, let's look at some ways we're likely to get tripped up.
 
 Let's say we want to define a function with a hyphenated name, a-b,
 but we supply the a and b parts separately. The Racket @racket[struct]
-form does somethin like this---if we define a @racket[struct] named
+form does something like this---if we define a @racket[struct] named
 @racket[foo], it defines a number of functions whose names are
 variations on the name @racket[foo], such as @racket[foo-field1],
 @racket[foo-field2], @racket[foo?], and so on.
@@ -767,7 +767,7 @@ TO-DO.
 
 @; ----------------------------------------------------------------------------
 
-@section{References/Acknowledgements}
+@section{References/Acknowledgments}
 
 Eli Barzliay wrote a blog post,
  @hyperlink["http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html" "Writing
@@ -786,7 +786,7 @@ before PLT Scheme was renamed to Racket.
 
 @; ----------------------------------------------------------------------------
 
-@section{Epilog}
+@section{Epilogue}
 
 @centered{
 "Before I had studied Chan (Zen) for thirty years, I saw mountains as
