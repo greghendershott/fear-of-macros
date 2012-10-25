@@ -694,7 +694,7 @@ convenient for formatting identifier names.
       #f))
 }
 
-It would be great to write:
+You could write:
 
 @codeblock{
 (aif (big-long-calculation)
@@ -716,29 +716,40 @@ should be easy:
 (aif #t (displayln it) (void))
 ]
 
-Wait, what---@racket[it] is undefined?
+Wait, what? @racket[it] is undefined?
 
 It turns out that all along we have been protected from making a
-certain kind of mistake in our macros. The mistake is to introduce a
-variable that accidentally conflicts with one in the code that is
-using our macro.
+certain kind of mistake in our macros. The mistake is if our new
+syntax introduces a variable that accidentally conflicts with one in
+the code surrounding our macro.
 
-The Racket Reference
-@hyperlink["http://docs.racket-lang.org/reference/syntax-model.html#(part._transformer-model)" "Section
-1.2.3.5 Transformer Bindings."] has a good explanation of this, and an
-example. (You can stop when you reach the part about set!
-transformers.) Basically, the input syntax has "marks" to preserve
-lexical scope. This makes your macro behave like a normal function. If
-a normal function defines a variable named @racket[x], it won't
-conflict with a variable named @racket[x] in an outer scope.
+The Racket @italic{Reference} section, 
+@hyperlink["http://docs.racket-lang.org/reference/syntax-model.html#(part._transformer-model)" "Transformer
+Bindings"], has a good explanation and example. Basically, syntax
+has "marks" to preserve lexical scope. This makes your macro behave
+like a normal function, for lexical scoping.
 
-This makes it easy to write reliable macros that behave
-predictably. Unfortunately, once in awhile, we want to introduce a
-magic variable like @racket[it] for @racket[aif] on purpose.
+If a normal function defines a variable named @racket[x], it won't
+conflict with a variable named @racket[x] in an outer scope:
 
-The way to do this is with @racket[define-syntax-parameter] and
+@i[
+(let ([x "outer"])
+  (let ([x "inner"])
+    (printf "The inner `x' is ~s\n" x))
+  (printf "The outer `x' is ~s\n" x))
+]
+
+When your macros also respect lexical scoping, it's easy to write
+reliable macros that behave predictably.
+
+So that's wonderful default behavior. But @italic{sometimes} we want
+to introduce a magic variable on purpose---such as @racket[it] for
+@racket[aif].
+
+The way to do this is with a "syntax parameter", using
+@racket[define-syntax-parameter] and
 @racket[syntax-parameterize]. You're probably familiar with regular
-parameters in Racket.
+parameters in Racket:
 
 @i[
 (define current-foo (make-parameter "some default value"))
@@ -748,15 +759,16 @@ parameters in Racket.
 (current-foo)
 ]
 
-@margin-note{Historically, there are other ways to do this. If you
-know them, you will want to unlearn them. But if you're the target
-audience I'm writing for, you don't know them yet. You can skip
-learning them now. (Someday if you want to understand someone else's
-older macros, you can learn about them then.)}
+@margin-note{Historically, there are other ways to do this. If you're
+the target audience I'm writing for, you don't know them yet. I
+suggest not bothering to learn them, yet. (Someday if you want to
+understand someone else's older macros, you can learn about them
+then.)}
 
-The syntax variation of them works similarly. The idea is, we'll
-define @racket[it] to mean an error by default. Only inside of our
-@racket[aif] will it have a meaningful value:
+That's a normal parameter. The syntax variation works similarly. The
+idea is that we'll define @racket[it] to mean an error by
+default. Only inside of our @racket[aif] will it have a meaningful
+value:
 
 @i[
 (require racket/stxparam)
