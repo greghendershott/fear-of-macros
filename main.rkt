@@ -287,6 +287,11 @@ compiler, and @italic{that} syntax is evaluated:
 
 @subsection{Compile time vs. run time}
 
+@codeblock[#:indent 10]{
+(define-syntax (foo stx)
+  (make-pipe)) ;This is not run time.
+}
+
 Normal Racket code runs at ... run time. Duh.
 
 @margin-note{Instead of "compile time vs. run time", you may hear it
