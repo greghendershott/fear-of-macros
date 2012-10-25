@@ -1,7 +1,8 @@
 #lang scribble/manual
 
 @(require racket/sandbox
-          scribble/eval)
+          scribble/eval
+          racket/date)
 @(define evaluator
    (parameterize ([sandbox-output 'string]
                   [sandbox-error-output 'string])
@@ -10,10 +11,12 @@
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
-@title{Fear of Macros}
-
+@title[#:version ""]{Fear of Macros}
+@author{Greg Hendershott}
 @smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}
-
+@para[@smaller["Last updated "
+               (parameterize ([date-display-format 'iso-8601])
+                 (date->string (current-date) #t))]]
 @table-of-contents{}
 
 
