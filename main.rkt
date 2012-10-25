@@ -130,8 +130,8 @@ YOU HAVE A SYNTAX TRANSFORMER
 A syntax transformer is not one of the トランスフォーマ
 @hyperlink["http://en.wikipedia.org/wiki/Transformers" "transformers"].
 
-Instead, it is quite simple. It is a function. The function takes
-syntax and returns syntax. It transforms syntax.
+Instead, it is simply a function. The function takes syntax and
+returns syntax. It transforms syntax.
 
 Here's a transformer function that ignores its input syntax, and
 always outputs syntax for a string literal:
@@ -198,13 +198,12 @@ calls our function with the old syntax, and we return the new syntax,
 which is used to evaluate and run our program.
 
 
-@subsection{What is the input?}
+@subsection{What's the input, Kenneth?}
 
-Our examples so far have been ignoring the input syntax, and
-outputting a fixed syntax. Usually, we want to transform the input to
-something else.
+Our examples so far ignored the input syntax, and output a fixed
+syntax. But usually we want to transform the input to something else.
 
-But let's start by looking at what the input @italic{is}:
+Let's start by looking closely at what the input actually @italic{is}:
 
 @i[
 (define-syntax (show-me stx)
@@ -254,8 +253,11 @@ given:
 (reverse-me "backwards" "am" "i" values)
 ]
 
-What's going on here?  First we take the input syntax, and give it to
-@racket[syntax->datum]. This converts the syntax into a plain old list:
+Understand Yoda, can we. Great, but how does this work?
+
+First we take the input syntax, and give it to
+@racket[syntax->datum]. This converts the syntax into a plain old
+list:
 
 @i[
 (syntax->datum #'(reverse-me "backwards" "am" "i" values))
@@ -302,12 +304,12 @@ process of parsing, expanding and understanding your code. In other
 words, your syntax transformer function is evaluated at compile time.
 
 This aspect of macros lets you do things that simply aren't possible
-in normal code. One of the classic examples, is something like the
-Racket @racket[if] form:
+in normal code. One of the classic examples is something like the
+Racket form, @racket[if]:
 
 @racket[(if <condition> <true-expression> <false-expression>)]
 
-If @racket[if] were implemented as a function, all of the arguments
+If we implemented @racket[if] as a function, all of the arguments
 would be evaluated before being provided to the function.
 
 @i[
@@ -538,8 +540,8 @@ shorthand.
 @subsection{Patterns and templates}
 
 Most of the materials I found for learning macros, including the
-Racket Guide, do a very good job explaining how the patterns work. I'm
-not going to regurgitate that here.
+Racket @italic{Guide}, do a very good job explaining how patterns
+work. I'm not going to regurgitate that here.
 
 Instead, let's look at some ways we're likely to get tripped up.
 
@@ -547,14 +549,14 @@ Instead, let's look at some ways we're likely to get tripped up.
 
 Let's say we want to define a function with a hyphenated name, a-b,
 but we supply the a and b parts separately. The Racket @racket[struct]
-form does something like this---if we define a @racket[struct] named
-@racket[foo], it defines a number of functions whose names are
-variations on the name @racket[foo], such as @racket[foo-field1],
+macro does something like this: @racket[(struct foo (field1 field2))]
+automatically defines a number of functions whose names are variations
+on the name @racket[foo]---such as @racket[foo-field1],
 @racket[foo-field2], @racket[foo?], and so on.
 
-So let's pretend we're doing something like that.  We want to
-transform the syntax @racket[(hyphen-define a b (args) body)] to
-the syntax @racket[(define (a-b args) body)].
+So let's pretend we're doing something like that. We want to transform
+the syntax @racket[(hyphen-define a b (args) body)] to the syntax
+@racket[(define (a-b args) body)].
 
 A wrong first attempt is:
 
@@ -573,10 +575,11 @@ The "template" is the @racket[#'(define (name args ...)  body0 body
 sounds like we can't use @racket[a] (or @racket[b]) in the
 @racket[let] part.
 
-It turns out that @racket[syntax-case] can have multiple
-templates. The final expression is the obvious template, used to
-create the output syntax. But you can use @racket[syntax] a.k.a. #' on
-a pattern variable, to make a template. Let's try that:
+Well, @racket[syntax-case] can have as many templates as you want. The
+final expression is the obvious template, used to create the output
+syntax. But you can use @racket[syntax] (a.k.a. #') on a pattern
+variable. This makes another template, albeit a small, "fun size"
+template. Let's try that:
 
 @i[
 (define-syntax (hyphen-define/wrong1.1 stx)
@@ -589,35 +592,35 @@ a pattern variable, to make a template. Let's try that:
 (foo-bar)
 ]
 
-Our macro definition didn't give an error, but when we tried to use
-it, it didn't work. It seems that foo-bar didn't get defined.
+Our macro definition didn't give an error, so that's good progress!
+But when we tried to use it, no luck. It seems that a function named
+@racket[foo-bar] wasn't defined.
 
 This is where the Macro Stepper in DrRacket is invaluable. Even if you
-prefer to work in Emacs (like I do), in a situation like this it's
-worth firing up DrRacket temporarily to use the Macro Stepper.
+prefer to work in Emacs (like I do), this is a situation where it's
+worth using DrRacket temporarily for its Macro Stepper.
 
-It shows us:
+The Macro Stepper says that:
 
 @codeblock{
-(module anonymous-module racket
-  (#%module-begin
-   (define-syntax (hyphen-define/wrong1.1 stx)
-     (syntax-case stx ()
-       [(_ a b (args ...) body0 body ...)
-        (let ([name (string->symbol (format "~a-~a" #'a #'b))])
-          #'(define (name args ...) body0 body ...))]))
-   (define (name) #t)))
+(hyphen-define/wrong1.1 foo bar () #t)
 }
 
-It shows that we're expanding to @racket[(define (name) #t)], but we
-wanted to expand to @racket[(define (foo-bar) #t)].
+expanded to:
+
+@codeblock{
+   (define (name) #t)
+}
+
+We're expanding to @racket[(define (name) #t)], but we wanted to
+expand to @racket[(define (foo-bar) #t)].
 
 So the problem is we're getting @racket[name] when we wanted its
 value, @racket[foo-bar].
 
-The thing to reach for here is @racket[with-syntax]. This will say
-that @racket[name] is in effect another pattern variable, the value of
-which we want to use in our main output template.
+The thing to reach for here is @racket[with-syntax]. This will let us
+say that @racket[name] is in effect another pattern variable, the
+value of which we want to use in our main output template.
 
 @i[
 (define-syntax (hyphen-define/wrong1.3 stx)
@@ -633,9 +636,12 @@ which we want to use in our main output template.
 (foo-bar)
 ]
 
-Hmm. @racket[foo-bar] still not defined. Back to the Macro Stepper. It says we're expanding to:
+Hmm. @racket[foo-bar] is @italic{still} not defined. Back to the Macro
+Stepper. It says now we're expanding to:
 
-@racket[(define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)].
+@codeblock{
+(define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)
+}
 
 Ah, that's right. @racket[#'a] and @racket[#'b] are syntax
 objects. @racket[format] is printing a representation of them as syntax
