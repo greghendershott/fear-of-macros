@@ -724,13 +724,6 @@ define @racket[it] to mean an error by default. Only inside of our
 (aif #f (displayln it) (void))
 ]
 
-We can still use @racket[it] as a normal variable name:
-
-@i[
-(define it 10)
-it
-]
-
 If we try to use @racket[it] outside of an @racket[aif] form, and
 @racket[it] isn't otherwise defined, we get an error like we want:
 
@@ -738,12 +731,20 @@ If we try to use @racket[it] outside of an @racket[aif] form, and
 (displayln it)
 ]
 
-Perfect.
+But we can still define @racket[it] as a normal variable:
+
+@i[
+(define it 10)
+it
+]
+
 
 @; ----------------------------------------------------------------------------
 
 @section{Robust macros: syntax-parse}
 
+TO-DO.
+TO-DO.
 TO-DO.
 
 @; ----------------------------------------------------------------------------
