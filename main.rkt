@@ -550,7 +550,7 @@ the syntax @racket[(define (a-b args) body)].
 A wrong first attempt is:
 
 @i[
-(define-syntax (hyphen-define/wrong stx)
+(define-syntax (hyphen-define/wrong1 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (let ([name (string->symbol (format "~a-~a" a b))])
@@ -564,80 +564,118 @@ The "template" is the @racket[#'(define (name args ...)  body0 body
 sounds like we can't use @racket[a] (or @racket[b]) in the
 @racket[let] part.
 
-It turns out we can use a pattern variable in @italic{another}
-pattern---by using @racket[syntax-case] @italic{again}:
+It turns out that @racket[syntax-case] can have multiple
+templates. The final expression is the obvious template, used to
+create the output syntax. But you can use @racket[syntax] a.k.a. #' on
+a pattern variable, to make a template. Let's try that:
 
 @i[
-(define-syntax (hyphen-define/wrong stx)
+(define-syntax (hyphen-define/wrong1.1 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (syntax-case (datum->syntax stx (string->symbol (format "~a-~a"
-                                                             (syntax->datum a)
-                                                             (syntax->datum b)))) ()
-       [name #'(define (name args ...)
-                 body0 body ...)])]))
+     (let ([name (string->symbol (format "~a-~a" #'a #'b))])
+       #'(define (name args ...)
+           body0 body ...))]))
+(hyphen-define/wrong1.1 foo bar () #t)
+(foo-bar)
 ]
 
-@margin-note{I don't have a clear explanation for @italic{why} they
-need to be @tt{#'a} and @tt{#'b}. Can anyone help?}
+Our macro definition didn't give an error, but when we tried to use
+it, it didn't work. It seems that foo-bar didn't get defined.
 
-Well, not quite. We can't use @racket[a] and @racket[b] directly. We
-have to wrap each one in @racket[syntax], or use its reader alias,
-@tt{#'}:
+This is where the Macro Stepper in DrRacket is invaluable. Even if you
+prefer to work in Emacs (like I do), in a situation like this it's
+worth firing up DrRacket temporarily to use the Macro Stepper.
+
+It shows us:
+
+@codeblock{
+(module anonymous-module racket
+  (#%module-begin
+   (define-syntax (hyphen-define/wrong1.1 stx)
+     (syntax-case stx ()
+       [(_ a b (args ...) body0 body ...)
+        (let ([name (string->symbol (format "~a-~a" #'a #'b))])
+          #'(define (name args ...) body0 body ...))]))
+   (define (name) #t)))
+}
+
+It shows that we're expanding to @racket[(define (name) #t)], but we
+wanted to expand to @racket[(define (foo-bar) #t)].
+
+So the problem is we're getting @racket[name] when we wanted its
+value, @racket[foo-bar].
+
+The thing to reach for here is @racket[with-syntax]. This will say
+that @racket[name] is in effect another pattern variable, the value of
+which we want to use in our main output template.
+
+@i[
+(define-syntax (hyphen-define/wrong1.3 stx)
+  (syntax-case stx ()
+    [(_ a b (args ...) body0 body ...)
+     (with-syntax ([name (datum->syntax stx
+                                        (string->symbol (format "~a-~a"
+                                                                #'a
+                                                                #'b)))])
+       #'(define (name args ...)
+           body0 body ...))]))
+(hyphen-define/wrong1.3 foo bar () #t)
+(foo-bar)
+]
+
+Hmm. @racket[foo-bar] still not defined. Back to the Macro Stepper. It says we're expanding to:
+
+@racket[(define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)].
+
+Ah, that's right. @racket[#'a] and @racket[#'b] are syntax
+objects. @racket[format] is printing a representation of them as syntax
+objects. What we want is the datum inside the syntax object, the
+symbols @racket[foo] and @racket[bar]. So we should use
+@racket[syntax->datum] on them:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
-  (syntax-case stx ()
-    [(_ a b (args ...) body0 body ...)
-     (syntax-case (datum->syntax stx
-                                 (string->symbol (format "~a-~a"
-                                                         (syntax->datum #'a)
-                                                         (syntax->datum #'b)))) ()
-       [name #'(define (name args ...)
-                 body0 body ...)])]))
-(hyphen-define/ok1 first second () #t)
-(first-second)
-]
-
-And now it works!
-
-There is a shorthand for using @racket[syntax-case] this way. It's
-called @racket[with-syntax]. This makes it a little simpler:
-
-@i[
-(define-syntax (hyphen-define/ok2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (with-syntax ([name (datum->syntax stx
                                         (string->symbol (format "~a-~a" 
                                                                 (syntax->datum #'a)
                                                                 (syntax->datum #'b))))])
-       #`(define (name args ...)
+       #'(define (name args ...)
            body0 body ...))]))
-(hyphen-define/ok2 foo bar () #t)
+(hyphen-define/ok1 foo bar () #t)
 (foo-bar)
 ]
 
-Another handy thing is that @racket[with-syntax] will convert the
-expression to syntax automatically. So we don't need the
-@racket[datum->syntax] stuff, and now it becomes even simpler:
+And now it works!
+
+By the way, there is a utility function in @racket[racket/syntax]
+called @racket[format-id] that lets us format identifier names more
+succinctly. We remember to use @racket[for-syntax] with
+@racket[require], since we need it at compile time:
 
 @i[
-(define-syntax (hyphen-define/ok3 stx)
+(require (for-syntax racket/syntax))
+(define-syntax (hyphen-define/ok2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (with-syntax ([name (string->symbol (format "~a-~a" 
-                                                 (syntax->datum #'a)
-                                                 (syntax->datum #'b)))])
-       #`(define (name args ...)
+     (with-syntax ([name (format-id stx "~a-~a" #'a #'b)])
+       #'(define (name args ...)
            body0 body ...))]))
-(hyphen-define/ok3 foo bar () #t)
-(foo-bar)
+(hyphen-define/ok2 bar baz () #t)
+(bar-baz)
 ]
+
+Using @racket[format-id] is convenient as it handles the tedium of
+converting from syntax to datum and back again.
 
 Recap: If you want to munge pattern variables for use in the template,
 @racket[with-syntax] is your friend. Just remember you have to use
-@racket[syntax] or @tt{#'} on the pattern variables.
+@racket[syntax] or @tt{#'} on the pattern variables to turn them into
+fun size templates, and often also use @racket[syntax->datum] to get
+the interesting value inside. Finally, @racket[format-id] is
+convenient for formatting identifier names.
 
 @; ----------------------------------------------------------------------------
 
