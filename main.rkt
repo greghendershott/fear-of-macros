@@ -16,13 +16,13 @@
 
 @image["fear-of-macros.jpg"]
 @title[#:version ""]{Fear of Macros}
-@author{Greg Hendershott}
+@author[@hyperlink["https://github.com/greghendershott/fear-of-macros/issues"
+                   "Greg Hendershott"]]
 @smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
 @table-of-contents{}
-
 
 @; ----------------------------------------------------------------------------
 
@@ -49,6 +49,10 @@ going on. Gah.
 
 I'm starting to write this at the point where the shapes are slowly
 emerging from the fog.
+
+@margin-note{If you have any corrections, criticisms, complaints, or whatever,
+@hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "please
+let me know"].}
 
 My primary motive is selfish. Explaining something forces me to learn
 it more thoroughly. Plus I expect that if I write something with
