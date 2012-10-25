@@ -2,7 +2,10 @@
 
 @(require racket/sandbox
           scribble/eval
-          racket/date)
+          racket/date
+          (for-label racket)
+          (for-label racket/stxparam)
+          (for-label syntax/parse))
 @(define evaluator
    (parameterize ([sandbox-output 'string]
                   [sandbox-error-output 'string])
