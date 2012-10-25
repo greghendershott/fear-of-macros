@@ -1,4 +1,4 @@
-# Fear of Macros
+![Fear of Macros](https://www.greghendershott.com/fear-of-macros/fear-of-macros.jpg "")
 
 ## What it is
 
