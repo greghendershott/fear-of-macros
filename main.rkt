@@ -14,6 +14,7 @@
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
+@image["fear-of-macros.jpg"]
 @title[#:version ""]{Fear of Macros}
 @author{Greg Hendershott}
 @smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}
