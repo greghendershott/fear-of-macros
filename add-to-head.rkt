@@ -4,7 +4,8 @@
 ;;
 ;; AFIK no way via Scribble to put something into the <head> section.
 ;;
-;; This takes "main.html", adds some GA code, and outputs "index.html".
+;; This reads "main.html", injects some stuff immediately before the
+;; </head> closing tag, writes to "index.html".
 
 (define web-font
   "<link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>")
@@ -22,11 +23,12 @@ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www')
 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script>
-</head>
 EOF
 )
 
-(define all (string-append web-font ga-code))
+(define </head> "</head>")
+
+(define all (string-append web-font ga-code </head>))
 (define subst (regexp-replace* "\n" all "")) ;minify
 
 (define old (file->string "main.html"))
