@@ -600,7 +600,9 @@ This is where the Macro Stepper in DrRacket is invaluable. Even if you
 prefer to work in Emacs (like I do), this is a situation where it's
 worth using DrRacket temporarily for its Macro Stepper.
 
-The Macro Stepper says that:
+@image[#:scale 0.5 "macro-stepper.png"]
+
+The Macro Stepper says that the use of our macro:
 
 @codeblock{
 (hyphen-define/wrong1.1 foo bar () #t)
@@ -609,18 +611,21 @@ The Macro Stepper says that:
 expanded to:
 
 @codeblock{
-   (define (name) #t)
+(define (name) #t)
 }
 
-We're expanding to @racket[(define (name) #t)], but we wanted to
-expand to @racket[(define (foo-bar) #t)].
+Well that explains it. Instead, we wanted to expand to:
 
-So the problem is we're getting @racket[name] when we wanted its
-value, @racket[foo-bar].
+@codeblock{
+(define (foo-bar) #t)
+}
 
-The thing to reach for here is @racket[with-syntax]. This will let us
-say that @racket[name] is in effect another pattern variable, the
-value of which we want to use in our main output template.
+Our template is using the symbol @racket[name] but we wanted its
+value, such as @racket[foo-bar] in this use of our macro.
+
+A solution here is @racket[with-syntax], which lets us say that
+@racket[name] is something whose value can be used in our output
+template:
 
 @i[
 (define-syntax (hyphen-define/wrong1.3 stx)
@@ -643,11 +648,10 @@ Stepper. It says now we're expanding to:
 (define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)
 }
 
-Ah, that's right. @racket[#'a] and @racket[#'b] are syntax
-objects. @racket[format] is printing a representation of them as syntax
-objects. What we want is the datum inside the syntax object, the
-symbols @racket[foo] and @racket[bar]. So we should use
-@racket[syntax->datum] on them:
+Oh right: @racket[#'a] and @racket[#'b] are syntax objects, and
+@racket[format] is printing them as such. Instead we want the datum
+inside the syntax object, the symbol @racket[foo] and
+@racket[bar]. To get that, we use @racket[syntax->datum]:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
