@@ -198,7 +198,7 @@ calls our function with the old syntax, and we return the new syntax,
 which is used to evaluate and run our program.
 
 
-@subsection{What's the input, Kenneth?}
+@subsection{What's the input?}
 
 Our examples so far ignored the input syntax, and output a fixed
 syntax. But usually we want to transform the input to something else.
@@ -291,7 +291,8 @@ compiler, and @italic{that} syntax is evaluated:
 
 @codeblock[#:indent 10]{
 (define-syntax (foo stx)
-  (make-pipe)) ;This is not run time.
+  (make-pipe) ;This is not run time.
+  #'(void))
 }
 
 Normal Racket code runs at ... run time. Duh.
