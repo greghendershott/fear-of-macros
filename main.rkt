@@ -153,11 +153,11 @@ search-and-replace.
 
 Maybe you know that the usual way to define a function in Racket:
 
-@racket[(define (f x) ...)]
+@codeblock{(define (f x) ...)}
 
 is shorthand for:
 
-@racket[(define f (lambda (x) ...))]
+@codeblock{(define f (lambda (x) ...))}
 
 That shorthand lets you avoid typing @racket[lambda] and some parentheses.
 
