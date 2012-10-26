@@ -6,7 +6,10 @@
 ;;
 ;; This takes "main.html", adds some GA code, and outputs "index.html".
 
-(define _subst
+(define web-font
+  "<link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>")
+
+(define ga-code
 #<<EOF
 <script type="text/javascript">
 var _gaq = _gaq || [];
@@ -23,7 +26,8 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 EOF
 )
 
-(define subst (regexp-replace* "\n" _subst "")) ;minify
+(define all (string-append web-font ga-code))
+(define subst (regexp-replace* "\n" all "")) ;minify
 
 (define old (file->string "main.html"))
 (define new (regexp-replace "</head>" old subst))
