@@ -1,7 +1,37 @@
-/* Override some default Racket styles for a hopefully fresher look. */
+/* Override some default styles for a hopefully fresher look. */
+
+/*** racket.css ***/
 
 /* Monospace: */
-.maincolumn, .refpara, .refelem, .tocset, .stt, .hspace, .refparaleft, .refelemleft {
+.RktIn, .RktRdr, .RktPn, .RktMeta,
+.RktMod, .RktKw, .RktVar, .RktSym,
+.RktRes, .RktOut, .RktCmt, .RktVal, .hspace {
+  font-family: monospace;
+  font-size: 95%;
+  white-space: inherit;
+}
+
+/* Serif: */
+.inheritedlbl {
+  font-family: 'Fenix',serif;
+}
+
+/* Sans-serif: */
+.RBackgroundLabelInner {
+  font-family: sans-serif;
+}
+
+.RktBlk {
+  background-color: #f8faf8;
+  white-space: inherit;
+  text-align: left;
+}
+
+
+/*** scribble.css ***/
+
+/* Monospace: */
+.maincolumn, .refpara, .refelem, .tocset, .stt, .refparaleft, .refelemleft {
   font-family: monospace;
 }
 
