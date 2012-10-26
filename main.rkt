@@ -26,9 +26,9 @@
 
 @; ----------------------------------------------------------------------------
 
-@section{Introduction}
+@section{Preface}
 
-I learned Racket after 25 years of doing C/C++ imperative programming.
+I learned Racket after 25 years of mostly using C and C++.
 
 Some psychic whiplash resulted.
 
@@ -55,10 +55,10 @@ emerging from the fog.
 let me know"].}
 
 My primary motive is selfish. Explaining something forces me to learn
-it more thoroughly. Plus I expect that if I write something with
-mistakes, other people will be eager to point them out and correct
-me. Is that a social-engineering variation of meta-programming? Next
-question, please. :)
+it more thoroughly. Plus if I write something with mistakes, other
+people will be eager to point them out and correct me. Is that a
+social-engineering variation of meta-programming? Next question,
+please. :)
 
 Finally I do hope it may help other people who have a similar
 background and/or learning style as me.
@@ -96,14 +96,14 @@ if we want to write the ever-popular anaphoric if, with a "magic
 variable"?  It turns out we've been protected from making certain kind
 of mistakes. When we want to do this kind of thing on purpose, we use
 a @racket[syntax parameter]. [There are other, older ways to do
-this. We won't look at them. We also won't spend a lot of time talking
-about "hygiene".]
+this. We won't look at them. We also won't spend a lot of time
+advocating "hygiene"---we'll just stipulate that it's good.]
 
 4. Finally, we'll realize that our macros could be smarter when
-they're used in error. Normal Racket functions can optionally have
-contracts and types. These can catch mistakes and provide clear,
+they're used in error. Normal Racket functions optionally can have
+contracts and types. These catch usage mistakes and provide clear,
 useful error messages. It would be great if there were something
-similar for macros, and there is. One of the more-recent Racket macro
+similar for macro. There is. One of the more-recent Racket macro
 enhancements is @racket[syntax-parse].
 
 
@@ -455,13 +455,13 @@ So let's try that:
 
 @subsection{@racket[begin-for-syntax]}
 
-We used @racket[(require (for-syntax racket/match))] to
-@racket[require] @racket[match] because we needed to use
-@racket[match] at compile time.
+We used @racket[for-syntax] to @racket[require] the
+@racket[racket/match] module because we needed to use @racket[match]
+at compile time.
 
 What if we wanted to define our own helper function to be used by a
 macro?  One way to do that is put it in another module, and
-@racket[require] it using @racket[for/syntax], just like we did with
+@racket[require] it using @racket[for-syntax], just like we did with
 the @racket[racket/match] module.
 
 If instead we want to put the helper in the same module, we can't
@@ -483,13 +483,13 @@ To review:
 @itemize[
 
 @item{Syntax transformers work at compile time, not run time. The good
-news is this means we can do things rearrange the pieces of syntax
-without evaluating them. We can implement forms like @racket[if] that
-simply couldn't work properly as run time functions.}
+news is this means we can do things like rearrange the pieces of
+syntax without evaluating them. We can implement forms like
+@racket[if] that simply couldn't work properly as run time functions.}
 
 @item{More good news is that there isn't some special, weird language
 for writing syntax transformers. We can write these transformer
-functions using the Racket language we already know.}
+functions using the Racket language we already know and lovex.}
 
 @item{The semi-bad news is that the familiarity can make it easy to forget
 that we're not working at run time. Sometimes that's important to
@@ -499,8 +499,7 @@ remember.
 
   @item{For example only @racket[racket/base] is required for us
 automatically. If we need other modules, we have to require them, and
-do so @italic{for compile time} using
-@racket[(require (for-syntax))].}
+do so @italic{for compile time} using @racket[for-syntax].}
 
   @item{Similarly, if we want to define helper functions in the same
 file/module as the macros that use them, we need to wrap the
@@ -552,10 +551,10 @@ Here's what it looks like using @racket[syntax-case]:
 (our-if-using-syntax-case #t "true" "false")
 ]
 
-Pretty similar, huh?  The pattern part looks almost exactly the
-same. The "template" part---where we specify the new syntax---is
-simpler. We don't need to do quasi-quoting and unquoting. We don't need
-to use @racket[datum->syntax]. We simply supply a template, which uses
+Pretty similar, huh? The pattern matching part looks almost exactly
+the same. The way we specify the new syntax is simpler. We don't need
+to do quasi-quoting and unquoting. We don't need to use
+@racket[datum->syntax]. Instead, we supply a "template", which uses
 variables from the pattern.
 
 There is a shorthand for simple pattern-matching cases, which expands
@@ -613,17 +612,17 @@ A wrong first attempt is:
            body0 body ...))]))
 ]
 
-Huh. We have no idea what this error message means. Well, let's see.
-The "template" is the @racket[#'(define (name args ...)  body0 body
-...)] portion.  The @racket[let] isn't part of that template. It
-sounds like we can't use @racket[a] (or @racket[b]) in the
-@racket[let] part.
+Huh. We have no idea what this error message means. Well, let's try to
+work it out.  The "template" the error message refers to is the
+@racket[#'(define (name args ...)  body0 body ...)] portion. The
+@racket[let] isn't part of that template. It sounds like we can't use
+@racket[a] (or @racket[b]) in the @racket[let] part.
 
-Well, @racket[syntax-case] can have as many templates as you want. The
-final expression is the obvious template, used to create the output
-syntax. But you can use @racket[syntax] (a.k.a. #') on a pattern
-variable. This makes another template, albeit a small, "fun size"
-template. Let's try that:
+In fact, @racket[syntax-case] can have as many templates as you
+want. The obvious, required template is the final expression supplying
+the output syntax. But you can use @racket[syntax] (a.k.a. #') on a
+pattern variable. This makes another template, albeit a small, "fun
+size" template. Let's try that:
 
 @i[
 (define-syntax (hyphen-define/wrong1.1 stx)
@@ -641,8 +640,8 @@ But when we tried to use it, no luck. It seems that a function named
 @racket[foo-bar] wasn't defined.
 
 This is where the Macro Stepper in DrRacket is invaluable. Even if you
-prefer to work in Emacs (like I do), this is a situation where it's
-worth using DrRacket temporarily for its Macro Stepper.
+prefer to work mostly in Emacs (like I do), this is a situation where
+it's worth using DrRacket temporarily for its Macro Stepper.
 
 @image[#:scale 0.5 "macro-stepper.png"]
 
@@ -715,8 +714,8 @@ And now it works!
 
 By the way, there is a utility function in @racket[racket/syntax]
 called @racket[format-id] that lets us format identifier names more
-succinctly. We remember to use @racket[for-syntax] with
-@racket[require], since we need it at compile time:
+succinctly. As we've learned, we need to @racket[require] the module
+using @racket[for-syntax], since we need it at compile time:
 
 @i[
 (require (for-syntax racket/syntax))
@@ -733,12 +732,24 @@ succinctly. We remember to use @racket[for-syntax] with
 Using @racket[format-id] is convenient as it handles the tedium of
 converting from syntax to datum and back again.
 
-Recap: If you want to munge pattern variables for use in the template,
-@racket[with-syntax] is your friend. Just remember you have to use
-@racket[syntax] or @tt{#'} on the pattern variables to turn them into
-fun size templates, and often also use @racket[syntax->datum] to get
-the interesting value inside. Finally, @racket[format-id] is
-convenient for formatting identifier names.
+
+To review:
+
+@itemize[
+
+  @item{If you want to munge pattern variables for use in the
+template, @racket[with-syntax] is your friend.}
+
+  @item{You will need to use @racket[syntax] or @tt{#'} on the pattern
+variables to turn them into "fun size" templates.}
+
+  @item{Usually you'll also need to use @racket[syntax->datum] to get
+the interesting value inside.}
+
+  @item{@racket[format-id] is convenient for formatting identifier
+names.}
+
+]
 
 @; ----------------------------------------------------------------------------
 
@@ -818,12 +829,6 @@ parameters in Racket:
 (current-foo)
 ]
 
-@margin-note{Historically, there are other ways to do this. If you're
-the target audience I'm writing for, you don't know them yet. I
-suggest not bothering to learn them, yet. (Someday if you want to
-understand someone else's older macros, you can learn about them
-then.)}
-
 That's a normal parameter. The syntax variation works similarly. The
 idea is that we'll define @racket[it] to mean an error by
 default. Only inside of our @racket[aif] will it have a meaningful
@@ -888,22 +893,34 @@ TO-DO.
 
 @; ----------------------------------------------------------------------------
 
-@section{References/Acknowledgments}
+@section{References and Acknowledgments}
 
-Eli Barzliay wrote a blog post,
- @hyperlink["http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html" "Writing
-‘syntax-case’ Macros"], which explains many key details. However it's written
-especially for people already familiar with "un-hygienic" "defmacro"
-style macros. If you're not familiar with those, it may seem slightly
-weird to the extent it's trying to convince you to change an opinion
-you don't have. Even so, many key details are presented in Eli's typically
-concise, clear fashion.
+Eli Barzliay's blog post, 
+@hyperlink["http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html" "Writing
+‘syntax-case’ Macros"], helped me understand many key details and
+concepts. It also inspired me to use a "bottom-up" approach. However
+he wrote for a specific audience. If you're not already familiar with
+un-hygienic defmacro style macros, it may seem slightly weird to the
+extent it's trying to convince you to change an opinion you don't
+have.  I'm writing for people who don't have any opinion about macros
+at all, except maybe that macros seem scary and daunting.
 
-Eli Barzilay wrote another blog post,
+Eli wrote another blog post, 
 @hyperlink["http://blog.racket-lang.org/2008/02/dirty-looking-hygiene.html" "Dirty
 Looking Hygiene"], which explains syntax-parameterize. I relied
 heavily on that, mostly just updating it since his post was written
 before PLT Scheme was renamed to Racket.
+
+After initially wondering if I was asking the wrong question and
+conflating two different issues :), Shriram Krishnamurthi looked at an
+early draft and encouraged me to keep going. Sam Tobin-Hochstadt also
+encouraged me.
+
+After writing much of this, I noticed that Racket's documentation had
+improved since I last read it. Actually it was the same, and very
+good---I'd changed. It's interesting how much of what we already know
+is projected between the lines. That's what makes it so hard to write
+documentation. The only advantage I had was knowing so much less.
 
 @; ----------------------------------------------------------------------------
 
