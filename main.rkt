@@ -453,21 +453,63 @@ So let's try that:
 (our-if-using-match-v2 #t "true" "false")
 ]
 
+@subsection{@racket[begin-for-syntax]}
+
+We used @racket[(require (for-syntax racket/match))] to
+@racket[require] @racket[match] because we needed to use
+@racket[match] at compile time.
+
+What if we wanted to define our own helper function to be used by a
+macro?  One way to do that is put it in another module, and
+@racket[require] it using @racket[for/syntax], just like we did with
+the @racket[racket/match] module.
+
+If instead we want to put the helper in the same module, we can't
+simply @racket[define] it and use it---the definition would exist at
+run time, but we need it at compile time. The answer is to put the
+definition of the helper function(s) inside @racket[begin-for-syntax]:
+
+@codeblock{
+(begin-for-syntax
+ (define (my-helper-function ....)
+   ....)
+ (define-syntax (macro-using-my-helper-function stx)
+   (my-helper-function ....)
+   ....))
+}
+
 To review:
 
-Syntax transformers work at compile time, not run time. The good
-news is this means we can do things like delay evaluation, and
-implement forms like @racket[if] which simply couldn't work properly
-as run time functions.
+@itemize[
 
-Some other good news is that there isn't some special, weird language
+@item{Syntax transformers work at compile time, not run time. The good
+news is this means we can do things rearrange the pieces of syntax
+without evaluating them. We can implement forms like @racket[if] that
+simply couldn't work properly as run time functions.}
+
+@item{More good news is that there isn't some special, weird language
 for writing syntax transformers. We can write these transformer
-functions using familiar Racket code. The semi-bad news is that the
-familiarity can make it easy to forget that we're not working at run
-time. Sometimes that's important to remember. For example only
-@racket[racket/base] is required for us automatically. If we need other
-modules, we have to require them, and we have to require them
-@italic{for compile time} using @racket[(require (for-syntax))].
+functions using the Racket language we already know.}
+
+@item{The semi-bad news is that the familiarity can make it easy to forget
+that we're not working at run time. Sometimes that's important to
+remember.
+
+  @itemize[
+
+  @item{For example only @racket[racket/base] is required for us
+automatically. If we need other modules, we have to require them, and
+do so @italic{for compile time} using
+@racket[(require (for-syntax))].}
+
+  @item{Similarly, if we want to define helper functions in the same
+file/module as the macros that use them, we need to wrap the
+definitions inside a @racket[begin-for-syntax] form. Doing so makes
+them available at compile time.}
+
+  ]
+}
+]
 
 @; ----------------------------------------------------------------------------
 
@@ -475,8 +517,9 @@ modules, we have to require them, and we have to require them
 
 Most useful syntax transformers work by taking some input syntax, and
 rearranging the pieces into something else.  As we saw, this is
-possible but tedious using list accessors such as @racket[cadddr]. It's
-more convenient and less error-prone to use pattern-matching.
+possible but tedious using list accessors such as
+@racket[cadddr]. It's more convenient and less error-prone to use
+@racket[match] to do pattern-matching.
 
 @margin-note{Historically, @racket[syntax-case] and
 @racket[syntax-parse] pattern matching came first. @racket[match] was
@@ -828,8 +871,8 @@ TO-DO.
 
 @section{Other questions}
 
-Hopefully I will answer these in the course of the other sections. But
-just in case:
+Hopefully I will answer these in the course of writing the other
+sections. But just in case, here's a running list:
 
 @subsection{What's the point of @racket[with-syntax]?}
 
@@ -837,7 +880,7 @@ Done.
 
 @subsection{What's the point of @racket[begin-for-syntax]?}
 
-TO-DO.
+Done.
 
 @subsection{What's the point of @racket[racket/splicing]?}
 
