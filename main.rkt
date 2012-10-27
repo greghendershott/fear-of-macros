@@ -86,7 +86,7 @@ to change it (a "transformer"). We'll work at that level for awhile to
 get comfortable and to de-mythologize this whole macro business.
 
 2. Next, we'll realize that some pattern-matching would make life
-easier. We'll learn about @racket[syntax-case], and its shorthand
+easier. We'll learn about @racket[syntax-case] and its shorthand
 cousin, @racket[define-syntax-rule]. We'll discover we can get
 confused if we want to munge pattern variables before sticking them
 back in the template, and learn how to do that.
@@ -95,8 +95,8 @@ back in the template, and learn how to do that.
 if we want to write the ever-popular anaphoric if, with a "magic
 variable"?  It turns out we've been protected from making certain kind
 of mistakes. When we want to do this kind of thing on purpose, we use
-a @racket[syntax parameter]. [There are other, older ways to do
-this. We won't look at them. We also won't spend a lot of time
+a syntax parameter. [There are other, older ways to do this. We won't
+look at them. We also won't spend a lot of time
 advocating "hygiene"---we'll just stipulate that it's good.]
 
 4. Finally, we'll realize that our macros could be smarter when
@@ -957,14 +957,16 @@ before PLT Scheme was renamed to Racket.
 
 After initially wondering if I was asking the wrong question and
 conflating two different issues :), Shriram Krishnamurthi looked at an
-early draft and encouraged me to keep going. Sam Tobin-Hochstadt also
-encouraged me.
+early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
+Robby Findler also encouraged me.
 
-After writing much of this, I noticed that Racket's documentation had
-improved since I last read it. Actually it was the same, and very
-good---I'd changed. It's interesting how much of what we already know
-is projected between the lines. That's what makes it so hard to write
-documentation. The only advantage I had was knowing so much less.
+Finally, I noticed something strange. After writing much of this, when
+I returned to some parts of the Racket documentation, I noticed it had
+improved since I last read it. Of course, it was the same. I'd
+changed. It's interesting how much of what we already know is
+projected between the lines. My point is, the Racket documentation is
+very good. The @italic{Guide} provides helpful examples and
+tutorials. The @italic{Reference} is very clear and precise.
 
 @; ----------------------------------------------------------------------------
 
