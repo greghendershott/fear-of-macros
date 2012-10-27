@@ -86,7 +86,7 @@ to change it (a "transformer"). We'll work at that level for awhile to
 get comfortable and to de-mythologize this whole macro business.
 
 2. Next, we'll realize that some pattern-matching would make life
-easier. We'll learn about @racket[syntax-case], and its shorthand
+easier. We'll learn about @racket[syntax-case] and its shorthand
 cousin, @racket[define-syntax-rule]. We'll discover we can get
 confused if we want to munge pattern variables before sticking them
 back in the template, and learn how to do that.
@@ -95,8 +95,8 @@ back in the template, and learn how to do that.
 if we want to write the ever-popular anaphoric if, with a "magic
 variable"?  It turns out we've been protected from making certain kind
 of mistakes. When we want to do this kind of thing on purpose, we use
-a @racket[syntax parameter]. [There are other, older ways to do
-this. We won't look at them. We also won't spend a lot of time
+a syntax parameter. [There are other, older ways to do this. We won't
+look at them. We also won't spend a lot of time
 advocating "hygiene"---we'll just stipulate that it's good.]
 
 4. Finally, we'll realize that our macros could be smarter when
@@ -158,11 +158,11 @@ instead. Much like a search-and-replace.
 
 Maybe you know that the usual way to define a function in Racket:
 
-@codeblock{(define (f x) ...)}
+@racketblock[(define (f x) ...)]
 
 is shorthand for:
 
-@codeblock{(define f (lambda (x) ...))}
+@racketblock[(define f (lambda (x) ...))]
 
 That shorthand lets you avoid typing @racket[lambda] and some parentheses.
 
@@ -429,10 +429,10 @@ the three interesting pieces---the condition, true-expression, and
 false-expression---from the list using @racket[cadr], @racket[caddr],
 and @racket[cadddr] and arrange them into a @racket[cond] form:
 
-@codeblock{
+@racketblock[
 `(cond [,(cadr xs) ,(caddr xs)]
        [else ,(cadddr xs)])
-}
+]
 
 3. Finally, we change that into @racket[syntax] using
 @racket[datum->syntax]:
@@ -513,14 +513,14 @@ simply @racket[define] it and use it---the definition would exist at
 run time, but we need it at compile time. The answer is to put the
 definition of the helper function(s) inside @racket[begin-for-syntax]:
 
-@codeblock{
+@racketblock[
 (begin-for-syntax
  (define (my-helper-function ....)
    ....)
  (define-syntax (macro-using-my-helper-function stx)
    (my-helper-function ....)
    ....))
-}
+]
 
 To review:
 
@@ -575,14 +575,14 @@ to be added to the Racket macro system. It's called
 
 Recall our previous example:
 
-@codeblock{
+@racketblock[
 (require (for-syntax racket/match))
 (define-syntax (our-if-using-match-v2 stx)
   (match (syntax->list stx)
     [(list _ condition true-expr false-expr)
      (datum->syntax stx `(cond [,condition ,true-expr]
                                [else ,false-expr]))]))
-}
+]
 
 Here's what it looks like using @racket[syntax-case]:
 
@@ -691,21 +691,21 @@ it's worth using DrRacket temporarily for its Macro Stepper.
 
 The Macro Stepper says that the use of our macro:
 
-@codeblock{
+@racketblock[
 (hyphen-define/wrong1.1 foo bar () #t)
-}
+]
 
 expanded to:
 
-@codeblock{
+@racketblock[
 (define (name) #t)
-}
+]
 
 Well that explains it. Instead, we wanted to expand to:
 
-@codeblock{
+@racketblock[
 (define (foo-bar) #t)
-}
+]
 
 Our template is using the symbol @racket[name] but we wanted its
 value, such as @racket[foo-bar] in this use of our macro.
@@ -731,9 +731,9 @@ template:
 Hmm. @racket[foo-bar] is @italic{still} not defined. Back to the Macro
 Stepper. It says now we're expanding to:
 
-@codeblock{
+@racketblock[
 (define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)
-}
+]
 
 Oh right: @racket[#'a] and @racket[#'b] are syntax objects, and
 @racket[format] is printing them as such. Instead we want the datum
@@ -801,20 +801,20 @@ names.}
 
 "Anaphoric if" or "aif" is a popular macro example. Instead of writing:
 
-@codeblock{
+@racketblock[
 (let ([tmp (big-long-calculation)])
   (if tmp
       (foo tmp)
       #f))
-}
+]
 
 You could write:
 
-@codeblock{
+@racketblock[
 (aif (big-long-calculation)
      (foo it)
      #f)
-}
+]
 
 In other words, when the condition is true, an @racket[it] identifier
 is automatically created and set to the value of the condition. This
@@ -957,14 +957,16 @@ before PLT Scheme was renamed to Racket.
 
 After initially wondering if I was asking the wrong question and
 conflating two different issues :), Shriram Krishnamurthi looked at an
-early draft and encouraged me to keep going. Sam Tobin-Hochstadt also
-encouraged me.
+early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
+Robby Findler also encouraged me.
 
-After writing much of this, I noticed that Racket's documentation had
-improved since I last read it. Actually it was the same, and very
-good---I'd changed. It's interesting how much of what we already know
-is projected between the lines. That's what makes it so hard to write
-documentation. The only advantage I had was knowing so much less.
+Finally, I noticed something strange. After writing much of this, when
+I returned to some parts of the Racket documentation, I noticed it had
+improved since I last read it. Of course, it was the same. I'd
+changed. It's interesting how much of what we already know is
+projected between the lines. My point is, the Racket documentation is
+very good. The @italic{Guide} provides helpful examples and
+tutorials. The @italic{Reference} is very clear and precise.
 
 @; ----------------------------------------------------------------------------
 
@@ -986,7 +988,7 @@ Buddhism}.}
 
 Translated into Racket:
 
-@codeblock{
+@racketblock[
 (dynamic-wind (lambda ()
                 (and (eq? 'mountains 'mountains)
                      (eq? 'rivers 'rivers)))
@@ -996,5 +998,4 @@ Translated into Racket:
               (lambda ()
                 (and (eq? 'mountains 'mountains)
                      (eq? 'rivers 'rivers))))
-}
-
+]
