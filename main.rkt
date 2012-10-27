@@ -140,6 +140,11 @@ always outputs syntax for a string literal:
 (define-syntax foo
   (lambda (stx)
     (syntax "I am foo")))
+]
+
+Using it:
+
+@i[
 (foo)
 ]
 
@@ -148,8 +153,8 @@ When we use @racket[define-syntax], we're making a transformer
 encounter a chunk of syntax starting with @racket[foo], please give it
 to my transformer function, and replace it with the syntax I give back
 to you." So Racket will give anything that looks like @racket[(foo
-...)] to our function, and we can change it. Much like a
-search-and-replace.
+...)] to our function, and we can return new syntax to use
+instead. Much like a search-and-replace.
 
 Maybe you know that the usual way to define a function in Racket:
 
@@ -201,7 +206,8 @@ which is used to evaluate and run our program.
 @subsection{What's the input?}
 
 Our examples so far ignored the input syntax, and output a fixed
-syntax. But usually we want to transform the input to something else.
+syntax. But instead of throwing away the input, usually we want to
+transform the input.
 
 Let's start by looking closely at what the input actually @italic{is}:
 
@@ -226,17 +232,55 @@ as the source file, line number, and column. Finally, it has
 information about lexical scoping (which you don't need to worry about
 now, but will turn out to be important later.)
 
-There are a variety of functions available to access a syntax object:
+There are a variety of functions available to access a syntax object.
+Let's define a piece of syntax:
 
 @i[
 (define stx #'(if x (list "true") #f))
-(syntax->datum stx)
-(syntax-e stx)
-(syntax->list stx)
+stx
+]
+
+Now let's use functions that access the syntax object. The source
+information functions:
+
+@margin-note{@racket[(syntax-source stx)] is returning @racket['eval],
+only becaue of how I'm generating this documentation, using an
+evaluator to run code snippets in Scribble. Normally this would be
+somthing like "my-file.rkt".}
+
+@i[
 (syntax-source stx)
 (syntax-line stx)
 (syntax-column stx)
 ]
+
+More interesting is the syntax "stuff" itself. @racket[syntax->datum]
+converts it completely into an s-expression:
+
+@i[
+(syntax->datum stx)
+]
+
+Whereas @racket[syntax-e] only goes "one level down". It may return a
+list that has syntax objects:
+
+@i[
+(syntax-e stx)
+]
+
+Each of those syntax objects could be converted by @racket[syntax-e],
+and so on recursively---which is what @racket[syntax->datum] does.
+
+In most cases, @racket[syntax->list] gives the same result as
+@racket[syntax-e]:
+
+@i[
+(syntax->list stx)
+]
+
+When would @racket[syntax-e] and @racket[syntax->list] differ? Let's
+not get side-tracked now.
+
 
 When we want to transform syntax, we'll generally take the pieces we
 were given, maybe rearrange their order, perhaps change some of the
@@ -300,9 +344,9 @@ Normal Racket code runs at ... run time. Duh.
 @margin-note{Instead of "compile time vs. run time", you may hear it
 described as "syntax phase vs. runtime phase". Same difference.}
 
-But a syntax transformer is run by the Racket compiler, as part of the
-process of parsing, expanding and understanding your code. In other
-words, your syntax transformer function is evaluated at compile time.
+But a syntax transformer is called by Racket as part of the process of
+parsing, expanding, and compiling our program. In other words, our
+syntax transformer function is evaluated at compile time.
 
 This aspect of macros lets you do things that simply aren't possible
 in normal code. One of the classic examples is something like the
