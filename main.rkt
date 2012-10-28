@@ -2,7 +2,9 @@
 
 @(require racket/sandbox
           scribble/eval
+          scribble/racket
           racket/date
+          (for-syntax racket/base)
           (for-label racket)
           (for-label racket/stxparam)
           (for-label syntax/parse))
@@ -136,11 +138,15 @@ returns syntax. It transforms syntax.
 Here's a transformer function that ignores its input syntax, and
 always outputs syntax for a string literal:
 
+@(let-syntax([syntax (make-element-id-transformer
+                      (lambda (stx)
+                        #'@racket[syntax]))]) ;print as syntax not #'
 @i[
 (define-syntax foo
   (lambda (stx)
     (syntax "I am foo")))
 ]
+)
 
 Using it:
 
@@ -168,11 +174,15 @@ That shorthand lets you avoid typing @racket[lambda] and some parentheses.
 
 Well there is a similar shorthand for @racket[define-syntax]:
 
+@(let-syntax([syntax (make-element-id-transformer
+                      (lambda (stx)
+                        #'@racket[syntax]))]) ;print as syntax not #'
 @i[
 (define-syntax (also-foo stx)
   (syntax "I am also foo"))
 (also-foo)
 ]
+)
 
 What we want to remember is that this is simply shorthand. We are
 still defining a transformer function, which takes syntax and returns
@@ -182,11 +192,16 @@ basic idea. It's not magic.
 Speaking of shorthand, there is also a shorthand for @racket[syntax],
 which is @tt{#'}:
 
+@margin-note{@tt{#'} is short for  @racket[syntax] much like
+@tt{'} is short for @racket[quote].}
+
 @i[
 (define-syntax (quoted-foo stx)
   #'"I am also foo, using #' instead of syntax")
 (quoted-foo)
 ]
+
+We'll use the #' shorthand from now on.
 
 Of course, we can emit syntax that is more interesting than a
 string literal. How about returning @racket[(displayln "hi")]?
@@ -958,7 +973,9 @@ before PLT Scheme was renamed to Racket.
 After initially wondering if I was asking the wrong question and
 conflating two different issues :), Shriram Krishnamurthi looked at an
 early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
-Robby Findler also encouraged me.
+Robby Findler also encouraged me. Matthew Flatt showed me how to make
+a Scribble @racket[interaction] print @racket[syntax] as
+@racket["syntax"] rather than as @racket["#'"].
 
 Finally, I noticed something strange. After writing much of this, when
 I returned to some parts of the Racket documentation, I noticed it had

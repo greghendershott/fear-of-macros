@@ -26,9 +26,19 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 EOF
 )
 
+(define (meta k v)
+  (format "<meta name=\"~a\" content=\"~a\">" k v))
+
+(define metas
+  (string-append
+   (meta "keywords" "Racket,macros,Scheme")
+   (meta "description" "Practical Racket macros")
+   (meta "author" "Greg Hendershott")
+   (meta "charset" "utf-8")))
+  
 (define </head> "</head>")
 
-(define all (string-append web-font ga-code </head>))
+(define all (string-append metas web-font ga-code </head>))
 (define subst (regexp-replace* "\n" all "")) ;minify
 
 (define old (file->string "main.html"))
