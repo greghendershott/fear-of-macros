@@ -237,10 +237,10 @@ The @racket[(print stx)] shows what our transformer is given: a syntax
 object.
 
 A syntax object consists of several things. The first part is the
-s-expression representing the code, such as @racket['(i am a
-list)]. Racket (and Scheme and Lisp) expressions are s-expressions---
-code and data have the same structure, and this makes it vastly easier
-to rewrite syntax, i.e. write macros.
+s-expression representing the code, such as @racket['(+ 1
+2)]. Racket (and Scheme and Lisp) expressions are s-expressions---code
+and data have the same structure, and this makes it vastly easier to
+rewrite syntax, i.e. write macros.
 
 Racket syntax is also decorated with some interesting information such
 as the source file, line number, and column. Finally, it has
@@ -690,17 +690,21 @@ size" template. Let's try that:
      (let ([name (string->symbol (format "~a-~a" #'a #'b))])
        #'(define (name args ...)
            body0 body ...))]))
+]
+
+No more error---good! Let's try to use it:
+
+@i[
 (hyphen-define/wrong1.1 foo bar () #t)
 (foo-bar)
 ]
 
-Our macro definition didn't give an error, so that's good progress!
-But when we tried to use it, no luck. It seems that a function named
-@racket[foo-bar] wasn't defined.
+It seems we're defining a function with a name other than
+@racket[foo-bar]?
 
 This is where the Macro Stepper in DrRacket is invaluable. Even if you
-prefer to work mostly in Emacs (like I do), this is a situation where
-it's worth using DrRacket temporarily for its Macro Stepper.
+prefer mostly to use Emacs, this is a situation where it's worth using
+DrRacket at least temporarily for its Macro Stepper.
 
 @image[#:scale 0.5 "macro-stepper.png"]
 
