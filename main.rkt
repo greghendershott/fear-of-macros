@@ -726,9 +726,11 @@ Well that explains it. Instead, we wanted to expand to:
 Our template is using the symbol @racket[name] but we wanted its
 value, such as @racket[foo-bar] in this use of our macro.
 
-A solution here is @racket[with-syntax], which lets us say that
-@racket[name] is something whose value can be used in our output
-template:
+A solution here is @racket[with-syntax]@margin-note*{You could
+consider @racket[with-syntax] to mean, "define pattern variables".},
+which lets us say that @racket[name] is something whose value can be
+used in our output template. In effect, it lets us say that
+@racket[name] is an additional pattern variable.
 
 @i[
 (define-syntax (hyphen-define/wrong1.3 stx)
