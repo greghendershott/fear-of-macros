@@ -237,10 +237,7 @@ The @racket[(print stx)] shows what our transformer is given: a syntax
 object.
 
 A syntax object consists of several things. The first part is the
-s-expression representing the code, such as @racket['(+ 1
-2)]. Racket (and Scheme and Lisp) expressions are s-expressions---code
-and data have the same structure, and this makes it vastly easier to
-rewrite syntax, i.e. write macros.
+s-expression representing the code, such as @racket['(+ 1 2)].
 
 Racket syntax is also decorated with some interesting information such
 as the source file, line number, and column. Finally, it has
