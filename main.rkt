@@ -971,6 +971,11 @@ Looking Hygiene"], which explains syntax-parameterize. I relied
 heavily on that, mostly just updating it since his post was written
 before PLT Scheme was renamed to Racket.
 
+Matthew Flatt's
+@hyperlink["http://www.cs.utah.edu/plt/publications/macromod.pdf" "Composable
+and Compilable Macros: You Want it When?"] explains how Racket handles
+compile time vs. run time.
+
 @hyperlink["http://www.scheme.com/tspl4/syntax.html#./syntax:h0" "Chapter
 8"] of @italic{The Scheme Programming Language} by Kent Dybvig
 explains @racket[syntax-rules] and @racket[syntax-case]. Although
