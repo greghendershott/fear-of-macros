@@ -909,6 +909,10 @@ value:
 (aif #f (displayln it) (void))
 ]
 
+Inside the @racket[syntax-parameterize], @racket[it] acts as an alias
+for @racket[tmp]. The alias behavior is created by
+@racket[make-rename-transformer].
+
 If we try to use @racket[it] outside of an @racket[aif] form, and
 @racket[it] isn't otherwise defined, we get an error like we want:
 
