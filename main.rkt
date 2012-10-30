@@ -531,10 +531,10 @@ definition of the helper function(s) inside @racket[begin-for-syntax]:
 @racketblock[
 (begin-for-syntax
  (define (my-helper-function ....)
-   ....)
- (define-syntax (macro-using-my-helper-function stx)
-   (my-helper-function ....)
    ....))
+(define-syntax (macro-using-my-helper-function stx)
+  (my-helper-function ....)
+  ....)
 ]
 
 To review:
@@ -580,7 +580,7 @@ possible but tedious using list accessors such as
 @racket[match] to do pattern-matching.
 
 @margin-note{Historically, @racket[syntax-case] and
-@racket[syntax-parse] pattern matching came first. @racket[match] was
+@racket[syntax-rules] pattern matching came first. @racket[match] was
 added to Racket later.}
 
 It turns out that pattern-matching was one of the first improvements
