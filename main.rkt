@@ -754,9 +754,9 @@ Stepper. It says now we're expanding to:
 ]
 
 Oh right: @racket[#'a] and @racket[#'b] are syntax objects, and
-@racket[format] is printing them as such. Instead we want the datum
-inside the syntax object, the symbol @racket[foo] and
-@racket[bar]. To get that, we use @racket[syntax->datum]:
+@racket[format] is printing them as such. Instead we want the datum in
+the syntax objects (the symbols @racket[foo] and @racket[bar]). Let's
+use @racket[syntax->datum]:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
