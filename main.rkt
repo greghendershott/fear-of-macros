@@ -971,6 +971,12 @@ Looking Hygiene"], which explains syntax-parameterize. I relied
 heavily on that, mostly just updating it since his post was written
 before PLT Scheme was renamed to Racket.
 
+@hyperlink["http://www.scheme.com/tspl4/syntax.html#./syntax:h0" "Chapter
+8"] of @italic{The Scheme Programming Language} by Kent Dybvig
+explains @racket[syntax-rules] and @racket[syntax-case]. Although
+more "formal" in tone, you may find it helpful to read it. You never
+know which explanation or examples of something will click for you.
+
 After initially wondering if I was asking the wrong question and
 conflating two different issues :), Shriram Krishnamurthi looked at an
 early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
