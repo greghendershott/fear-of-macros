@@ -647,15 +647,15 @@ can appreciate @racket[define-syntax-rule] as a convenient shorthand,
 but not be scared of, or confused about, that for which it's
 shorthand.
 
-@subsection{Patterns and templates}
-
 Most of the materials I found for learning macros, including the
 Racket @italic{Guide}, do a very good job explaining how patterns
-work. I'm not going to regurgitate that here.
+and templates work. I'm not going to regurgitate that here.
 
-Instead, let's look at some ways we're likely to get tripped up.
+Sometimes, we need to go a step beyond the pattern and template. Let's
+look at some examples, how we can get confused, and how to get it
+working.
 
-@subsubsection{"A pattern variable can't be used outside of a template"}
+@subsection{"A pattern variable can't be used outside of a template"}
 
 Let's say we want to define a function with a hyphenated name, a-b,
 but we supply the a and b parts separately. The Racket @racket[struct]
