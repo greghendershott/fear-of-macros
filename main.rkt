@@ -966,7 +966,73 @@ Done.
 
 @subsection{What's the point of @racket[racket/splicing]?}
 
-TO-DO.
+I stared at @racket[racket/splicing] for the longest time, not
+understanding exactly how it works, or why I'd want to use it. As with
+other aspects of Racket macros, step number one was to de-mythologize
+it. This:
+
+@#reader scribble/comment-reader
+(i
+(require racket/splicing)
+(splicing-let ([x 0])
+  (define (get-x)
+    x))
+;; get-x is visible out here:
+(get-x)
+;; but x is not:
+x
+)
+
+is shorthand for this:
+
+@#reader scribble/comment-reader
+(i
+(define get-y
+  (let ([y 0])
+    (lambda ()
+      y)))
+;; get-y is visible out here:
+(get-y)
+;; but y is not:
+y
+)
+
+This is the classic Lisp/Scheme/Racket idiom sometimes called "let
+over lambda". @margin-note*{A 
+@hyperlink["http://people.csail.mit.edu/gregs/ll1-discuss-archive-html/msg03277.html" "koan"]
+about closures and objects.} A closure hides @racket[y], which can't
+be accessed directly, only via @racket[get-y].
+
+So why would we care about the splicing forms? They can be more
+concise, especially when there are multiple body forms:
+
+@i[
+(require racket/splicing)
+(splicing-let ([x 0])
+  (define (inc)
+    (set! x (+ x 1)))
+  (define (dec)
+    (set! x (- x 1)))
+  (define (get)
+    x))
+]
+
+The splicing variation is more convenient than the usual way:
+
+@#reader scribble/comment-reader
+(i
+(define-values (inc dec get)
+  (let ([x 0])
+    (values (lambda ()  ;inc
+              (set! x (+ 1 x)))
+            (lambda ()  ;dec
+              (set! x (- 1 x)))
+            (lambda ()  ;get
+              x))))
+)
+
+When there are many body forms---and you are generating them in a
+macro---the splicing variations can be much easier.
 
 @; ----------------------------------------------------------------------------
 
