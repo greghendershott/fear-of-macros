@@ -237,10 +237,7 @@ The @racket[(print stx)] shows what our transformer is given: a syntax
 object.
 
 A syntax object consists of several things. The first part is the
-s-expression representing the code, such as @racket['(i am a
-list)]. Racket (and Scheme and Lisp) expressions are s-expressions---
-code and data have the same structure, and this makes it vastly easier
-to rewrite syntax, i.e. write macros.
+s-expression representing the code, such as @racket['(+ 1 2)].
 
 Racket syntax is also decorated with some interesting information such
 as the source file, line number, and column. Finally, it has
@@ -531,10 +528,21 @@ definition of the helper function(s) inside @racket[begin-for-syntax]:
 @racketblock[
 (begin-for-syntax
  (define (my-helper-function ....)
-   ....)
- (define-syntax (macro-using-my-helper-function stx)
-   (my-helper-function ....)
    ....))
+(define-syntax (macro-using-my-helper-function stx)
+  (my-helper-function ....)
+  ....)
+]
+
+In the simple case, we can also use @racket[define-for-syntax], which
+composes @racket[begin-for-syntax] and @racket[define]:
+
+@racketblock[
+(define-for-syntax (my-helper-function ....)
+  ....)
+(define-syntax (macro-using-my-helper-function stx)
+  (my-helper-function ....)
+  ....)
 ]
 
 To review:
@@ -580,7 +588,7 @@ possible but tedious using list accessors such as
 @racket[match] to do pattern-matching.
 
 @margin-note{Historically, @racket[syntax-case] and
-@racket[syntax-parse] pattern matching came first. @racket[match] was
+@racket[syntax-rules] pattern matching came first. @racket[match] was
 added to Racket later.}
 
 It turns out that pattern-matching was one of the first improvements
@@ -690,17 +698,21 @@ size" template. Let's try that:
      (let ([name (string->symbol (format "~a-~a" #'a #'b))])
        #'(define (name args ...)
            body0 body ...))]))
+]
+
+No more error---good! Let's try to use it:
+
+@i[
 (hyphen-define/wrong1.1 foo bar () #t)
 (foo-bar)
 ]
 
-Our macro definition didn't give an error, so that's good progress!
-But when we tried to use it, no luck. It seems that a function named
-@racket[foo-bar] wasn't defined.
+It seems we're defining a function with a name other than
+@racket[foo-bar]?
 
 This is where the Macro Stepper in DrRacket is invaluable. Even if you
-prefer to work mostly in Emacs (like I do), this is a situation where
-it's worth using DrRacket temporarily for its Macro Stepper.
+prefer mostly to use Emacs, this is a situation where it's worth using
+DrRacket at least temporarily for its Macro Stepper.
 
 @image[#:scale 0.5 "macro-stepper.png"]
 
@@ -725,9 +737,11 @@ Well that explains it. Instead, we wanted to expand to:
 Our template is using the symbol @racket[name] but we wanted its
 value, such as @racket[foo-bar] in this use of our macro.
 
-A solution here is @racket[with-syntax], which lets us say that
-@racket[name] is something whose value can be used in our output
-template:
+A solution here is @racket[with-syntax]@margin-note*{You could
+consider @racket[with-syntax] to mean, "define pattern variables".},
+which lets us say that @racket[name] is something whose value can be
+used in our output template. In effect, it lets us say that
+@racket[name] is an additional pattern variable.
 
 @i[
 (define-syntax (hyphen-define/wrong1.3 stx)
@@ -751,9 +765,9 @@ Stepper. It says now we're expanding to:
 ]
 
 Oh right: @racket[#'a] and @racket[#'b] are syntax objects, and
-@racket[format] is printing them as such. Instead we want the datum
-inside the syntax object, the symbol @racket[foo] and
-@racket[bar]. To get that, we use @racket[syntax->datum]:
+@racket[format] is printing them as such. Instead we want the datum in
+the syntax objects (the symbols @racket[foo] and @racket[bar]). Let's
+use @racket[syntax->datum]:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
@@ -908,6 +922,10 @@ value:
 (aif #f (displayln it) (void))
 ]
 
+Inside the @racket[syntax-parameterize], @racket[it] acts as an alias
+for @racket[tmp]. The alias behavior is created by
+@racket[make-rename-transformer].
+
 If we try to use @racket[it] outside of an @racket[aif] form, and
 @racket[it] isn't otherwise defined, we get an error like we want:
 
@@ -969,6 +987,17 @@ Eli wrote another blog post,
 Looking Hygiene"], which explains syntax-parameterize. I relied
 heavily on that, mostly just updating it since his post was written
 before PLT Scheme was renamed to Racket.
+
+Matthew Flatt's
+@hyperlink["http://www.cs.utah.edu/plt/publications/macromod.pdf" "Composable
+and Compilable Macros: You Want it When?"] explains how Racket handles
+compile time vs. run time.
+
+@hyperlink["http://www.scheme.com/tspl4/syntax.html#./syntax:h0" "Chapter
+8"] of @italic{The Scheme Programming Language} by Kent Dybvig
+explains @racket[syntax-rules] and @racket[syntax-case]. Although
+more "formal" in tone, you may find it helpful to read it. You never
+know which explanation or examples of something will click for you.
 
 After initially wondering if I was asking the wrong question and
 conflating two different issues :), Shriram Krishnamurthi looked at an
