@@ -7,7 +7,8 @@
           (for-syntax racket/base)
           (for-label racket)
           (for-label racket/stxparam)
-          (for-label syntax/parse))
+          (for-label syntax/parse)
+          (for-label racket/splicing))
 @(define evaluator
    (parameterize ([sandbox-output 'string]
                   [sandbox-error-output 'string])
@@ -16,14 +17,18 @@
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
-@image["fear-of-macros.jpg"]
 @title[#:version ""]{Fear of Macros}
-@author[@hyperlink["https://github.com/greghendershott/fear-of-macros/issues"
+@author[@hyperlink["http://www.greghendershott.com"
                    "Greg Hendershott"]]
-@smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}
+@image["fear-of-macros.jpg"]
+@para[@smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}]
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
+@para{Feedback and corrections are @hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "welcome here"].}
+
+Contents:
+
 @table-of-contents{}
 
 @; ----------------------------------------------------------------------------
@@ -109,6 +114,7 @@ similar for macro. There is. One of the more-recent Racket macro
 enhancements is @racket[syntax-parse].
 
 
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{Transformers}
@@ -217,6 +223,7 @@ When Racket expands our program, it sees the occurrence of
 calls our function with the old syntax, and we return the new syntax,
 which is used to evaluate and run our program.
 
+@; ----------------------------------------------------------------------------
 
 @subsection{What's the input?}
 
@@ -298,6 +305,9 @@ When we want to transform syntax, we'll generally take the pieces we
 were given, maybe rearrange their order, perhaps change some of the
 pieces, and often introduce brand-new pieces.
 
+
+@; ----------------------------------------------------------------------------
+
 @subsection{Actually transforming the input}
 
 Let's write a transformer function that reverses the syntax it was
@@ -342,6 +352,7 @@ compiler, and @italic{that} syntax is evaluated:
 (values "i" "am" "backwards")
 ]
 
+@; ----------------------------------------------------------------------------
 
 @subsection{Compile time vs. run time}
 
@@ -509,6 +520,8 @@ So let's try that:
 (our-if-using-match-v2 #t "true" "false")
 ]
 
+@; ----------------------------------------------------------------------------
+
 @subsection{@racket[begin-for-syntax]}
 
 We used @racket[for-syntax] to @racket[require] the
@@ -577,6 +590,7 @@ them available at compile time.}
 }
 ]
 
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{Pattern matching: syntax-case and syntax-rules}
@@ -654,6 +668,8 @@ and templates work. I'm not going to regurgitate that here.
 Sometimes, we need to go a step beyond the pattern and template. Let's
 look at some examples, how we can get confused, and how to get it
 working.
+
+@; ----------------------------------------------------------------------------
 
 @subsection{"A pattern variable can't be used outside of a template"}
 
@@ -1073,6 +1089,7 @@ it
 
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
 @section{Robust macros: syntax-parse}
 
@@ -1083,13 +1100,16 @@ TO-DO.
 TO-DO.
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
-@section{What's the point of @racket[racket/splicing]?}
+@section{What's the point of @racket[splicing-let]?}
 
-I stared at @racket[racket/splicing] for the longest time, not
-understanding exactly how it works, or why I'd want to use it. As with
-other aspects of Racket macros, step number one was to de-mythologize
-it. This:
+I stared at @racket[racket/splicing] for the longest time. What does
+it do? Why would I use it? Why is it in the Macros section of the
+reference?
+
+Step one, @elem[#:style "strike"]{cut a hole in the box}
+de-mythologize it. For example, using @racket[splicing-let] like this:
 
 @#reader scribble/comment-reader
 (i
@@ -1103,7 +1123,7 @@ it. This:
 x
 )
 
-is shorthand for this:
+is equivalent to:
 
 @#reader scribble/comment-reader
 (i
@@ -1118,10 +1138,10 @@ y
 )
 
 This is the classic Lisp/Scheme/Racket idiom sometimes called "let
-over lambda". @margin-note*{A 
+over lambda". @margin-note*{A
 @hyperlink["http://people.csail.mit.edu/gregs/ll1-discuss-archive-html/msg03277.html" "koan"]
-about closures and objects.} A closure hides @racket[y], which can't
-be accessed directly, only via @racket[get-y].
+about closures and objects.} A closure hides @racket[y], which can
+only be accessed via @racket[get-y].
 
 So why would we care about the splicing forms? They can be more
 concise, especially when there are multiple body forms:
@@ -1154,7 +1174,7 @@ The splicing variation is more convenient than the usual way:
 When there are many body forms---and you are generating them in a
 macro---the splicing variations can be much easier.
 
-
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{References and Acknowledgments}
@@ -1202,6 +1222,7 @@ very good. The @italic{Guide} provides helpful examples and
 tutorials. The @italic{Reference} is very clear and precise.
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
 @section{Epilogue}
 
@@ -1218,7 +1239,6 @@ later translated by D.T. Suzuki in his @italic{Essays in Zen
 Buddhism}.}
 }
 
-
 Translated into Racket:
 
 @racketblock[
@@ -1231,4 +1251,5 @@ Translated into Racket:
               (lambda ()
                 (and (eq? 'mountains 'mountains)
                      (eq? 'rivers 'rivers))))
+
 ]
