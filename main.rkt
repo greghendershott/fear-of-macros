@@ -826,6 +826,137 @@ names.}
 
 @; ----------------------------------------------------------------------------
 
+@subsection{Making our own @racket[struct]}
+
+In this example we'll pretend that Racket doesn't already have a
+@racket[struct] capability. Fortunately, we can define a macro to
+provide this feature. To keep things simple, our structure will be
+immutable (read-only) and it won't support inheritance.
+
+Given a structure declaration like:
+
+@racketblock[
+(our-struct name (field1 field2 ...))
+]
+
+We need to define some procedures.
+
+@itemize[
+
+@item{A constructor procedure whose name is the struct name. We'll
+represent structures as a @racket[vector]. The structure name will be
+element zero. The fields will be elements one onward.}
+
+@item{A predicate, whose name is the struct name with @tt{?}
+appended.}
+
+@item{For each field, an accessor procedure to get its value. These
+will be named struct-field (the name of the struct, a hyphen, and the
+field name).}
+
+]
+
+
+@#reader scribble/comment-reader
+(i
+(require (for-syntax racket/syntax))
+(define-syntax (our-struct stx)
+  (syntax-case stx ()
+    [(_ id (fields ...))
+     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+       #`(begin
+           ;; Define a constructor.
+           (define (id fields ...)
+             (apply vector (cons (quote id) (list fields ...))))
+           ;; Define a predicate.
+           (define (pred-id v)
+             (and (vector? v)
+                  (eq? (vector-ref v 0) 'id)))
+           ;; Define an accessor for each field.
+           #,@(for/list ([x (syntax->list #'(fields ...))]
+                         [n (in-naturals 1)])
+                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                              [ix n])
+                  #`(define (acc-id v)
+                      (unless (pred-id v)
+                        (error 'acc-id "~a is not a ~a struct" v 'id))
+                      (vector-ref v ix))))))]))
+
+;; Test it out
+(require rackunit)
+(our-struct foo (a b))
+(define s (foo 1 2))
+(check-true (foo? s))
+(check-false (foo? 1))
+(check-equal? (foo-a s) 1)
+(check-equal? (foo-b s) 2)
+(check-exn exn:fail?
+           (lambda () (foo-a "furble")))
+
+;; The tests passed.
+;; Next, what if someone tries to declare:
+(our-struct "blah" ("blah" "blah"))
+)
+
+The error message is not very helpful. It's coming from
+@racket[format-id], which is a private implementation detail of our macro.
+
+You may know that a @racket[syntax-case] clause can take an
+optional "guard" or "fender" expression.  Instead of
+
+@racketblock[
+[pattern template]
+]
+
+It can be:
+
+@racketblock[
+[pattern guard template]
+]
+
+Let's add a guard expression to our clause:
+
+@#reader scribble/comment-reader
+(i
+(require (for-syntax racket/syntax))
+(define-syntax (our-struct stx)
+  (syntax-case stx ()
+    [(_ id (fields ...))
+     ;; Guard or "fender" expression:
+     (for-each (lambda (x)
+                 (unless (identifier? x)
+                   (raise-syntax-error #f "not an identifier" stx x)))
+               (cons #'id (syntax->list #'(fields ...))))
+     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+       #`(begin
+           ;; Define a constructor.
+           (define (id fields ...)
+             (apply vector (cons (quote id) (list fields ...))))
+           ;; Define a predicate.
+           (define (pred-id v)
+             (and (vector? v)
+                  (eq? (vector-ref v 0) 'id)))
+           ;; Define an accessor for each field.
+           #,@(for/list ([x (syntax->list #'(fields ...))]
+                         [n (in-naturals 1)])
+                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                              [ix n])
+                  #`(define (acc-id v)
+                      (unless (pred-id v)
+                        (error 'acc-id "~a is not a ~a struct" v 'id))
+                      (vector-ref v ix))))))]))
+
+;; Now the same misuse gives a better error message:
+(our-struct "blah" ("blah" "blah"))
+)
+
+Later, we'll see how @racket[syntax-parse] makes it even easier to
+check usage and provide helpful messages about mistakes.
+
+
+@; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
+
 @section{Syntax parameters}
 
 "Anaphoric if" or "aif" is a popular macro example. Instead of writing:
