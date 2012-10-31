@@ -951,20 +951,7 @@ TO-DO.
 
 @; ----------------------------------------------------------------------------
 
-@section{Other questions}
-
-Hopefully I will answer these in the course of writing the other
-sections. But just in case, here's a running list:
-
-@subsection{What's the point of @racket[with-syntax]?}
-
-Done.
-
-@subsection{What's the point of @racket[begin-for-syntax]?}
-
-Done.
-
-@subsection{What's the point of @racket[racket/splicing]?}
+@section{What's the point of @racket[racket/splicing]?}
 
 I stared at @racket[racket/splicing] for the longest time, not
 understanding exactly how it works, or why I'd want to use it. As with
@@ -1033,6 +1020,7 @@ The splicing variation is more convenient than the usual way:
 
 When there are many body forms---and you are generating them in a
 macro---the splicing variations can be much easier.
+
 
 @; ----------------------------------------------------------------------------
 
