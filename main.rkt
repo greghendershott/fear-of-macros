@@ -534,6 +534,17 @@ definition of the helper function(s) inside @racket[begin-for-syntax]:
   ....)
 ]
 
+In the simple case, we can also use @racket[define-for-syntax], which
+composes @racket[begin-for-syntax] and @racket[define]:
+
+@racketblock[
+(define-for-syntax (my-helper-function ....)
+  ....)
+(define-syntax (macro-using-my-helper-function stx)
+  (my-helper-function ....)
+  ....)
+]
+
 To review:
 
 @itemize[
