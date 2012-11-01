@@ -970,6 +970,103 @@ Later, we'll see how @racket[syntax-parse] makes it even easier to
 check usage and provide helpful messages about mistakes.
 
 
+@subsection{Using dot notation for nested hash lookups}
+
+The previous two examples used a macro to define functions whose names
+were made by joining identifiers provided to the macro. This example
+does the opposite: The identifier given to the macro is split into
+pieces.
+
+If you write programs for web services you deal with JSON, which is
+represented in Racket by a @racket[jsexpr?]. JSON often has
+dictionaries that contain other dictionaries. In a @racket[jsexpr?]
+these are represented by nested @racket[hasheq] tables.
+
+JavaScript you can use dot notation:
+
+@codeblock{
+foo = js.a.b.c;
+}
+
+In Racket it's not so convenient:
+
+@#reader scribble/comment-reader
+(i
+; Nested hasheqs typical of a jsexpr:
+(define js (hasheq 'a (hasheq 'b (hasheq 'c "value"))))
+; Typical annoying code to get something:
+(hash-ref (hash-ref (hash-ref js 'a) 'b) 'c)
+)
+
+We can write a helper function to make this a bit cleaner:
+
+@#reader scribble/comment-reader
+(i
+;; This helper function:
+(define/contract (hash-refs h ks [def #f])
+  ((hash? (listof any/c)) (any/c) . ->* . any)
+  (with-handlers ([exn:fail? (const (cond [(procedure? def) (def)]
+                                          [else def]))])
+    (for/fold ([h h])
+      ([k (in-list ks)])
+      (hash-ref h k))))
+
+;; Lets us say:
+(hash-refs js '(a b c))
+)
+
+That's not bad. Can we go even further and use a dot notation somewhat
+like JavaScript?
+
+@#reader scribble/comment-reader
+(i
+;; This macro:
+(require (for-syntax racket/syntax))
+(define-syntax (hash.refs stx)
+  (syntax-case stx ()
+    [(_)
+     (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
+                         stx #'chain)]
+    [(_ chain)
+     #'(hash.refs chain #f)]
+    [(_ chain default)
+     (unless (symbol? (syntax-e #'chain))
+       (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
+                           stx #'chain))
+     (let ([xs (map (lambda (x)
+                      (datum->syntax stx (string->symbol x)))
+                    (regexp-split #rx"\\." 
+                                  (symbol->string (syntax->datum #'chain))))])
+       (unless (and (>= (length xs) 2)
+                    (not (eq? (syntax-e (cadr xs)) '||)))
+         (raise-syntax-error #f "Expected hash.key" stx #'chain))
+       (with-syntax ([h (car xs)]
+                     [ks (cdr xs)])
+         #'(hash-refs h 'ks default)))]))
+;; Gives us "sugar" to say this:
+(hash.refs js.a.b.c)
+)
+
+It works!
+
+We've started to appreciate that our macros should give helpful
+messages when used in error. We tried to do that here. Let's
+deliberately elicit various errors. Are the messages helpful?
+
+@i[
+(hash.refs)
+(hash.refs 0)
+(hash.refs js)
+(hash.refs js.)
+]
+
+Not too bad.
+
+Maybe we're not convinced that writing @racket[(hash.refs js.a.b.c)]
+is really clearer than @racket[(hash-refs js '(a b c))]. Maybe we
+won't actually use this approach. But the Racket macro system makes it
+a possible choice.
+
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
