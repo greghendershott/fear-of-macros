@@ -723,12 +723,13 @@ No more error---good! Let's try to use it:
 (foo-bar)
 ]
 
-It seems we're defining a function with a name other than
-@racket[foo-bar]?
+Apparently our macro is defining a function with some name other than
+@racket[foo-bar]. Huh.
 
-This is where the Macro Stepper in DrRacket is invaluable. Even if you
-prefer mostly to use Emacs, this is a situation where it's worth using
-DrRacket at least temporarily for its Macro Stepper.
+This is where the Macro Stepper in DrRacket is
+invaluable. @margin-note{Even if you prefer mostly to use Emacs, this
+is a situation where it's definitely worth temporarily using DrRacket
+for its Macro Stepper.}
 
 @image[#:scale 0.5 "macro-stepper.png"]
 
@@ -753,23 +754,39 @@ Well that explains it. Instead, we wanted to expand to:
 Our template is using the symbol @racket[name] but we wanted its
 value, such as @racket[foo-bar] in this use of our macro.
 
-A solution here is @racket[with-syntax]@margin-note*{You could
-consider @racket[with-syntax] to mean, "define pattern variables".},
-which lets us say that @racket[name] is something whose value can be
-used in our output template. In effect, it lets us say that
-@racket[name] is an additional pattern variable.
+Can we think of something we already know that behaves like
+this---where using a variable in the template yields its value?  Sure
+we do: Pattern variables. Our pattern doesn't include @racket[name]
+because we don't expect it in the original syntax---indeed the whole
+point of this macro is to create it. So @racket[name] can't be in the
+main pattern. Fine---let's make an @italic{additional} pattern. We can
+do that using an additional, nested @racket[syntax-case]:
 
 @i[
-(define-syntax (hyphen-define/wrong1.3 stx)
+(define-syntax (hyphen-define/wrong1.2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (with-syntax ([name (datum->syntax stx
-                                        (string->symbol (format "~a-~a"
-                                                                #'a
-                                                                #'b)))])
-       #'(define (name args ...)
-           body0 body ...))]))
-(hyphen-define/wrong1.3 foo bar () #t)
+     (syntax-case (datum->syntax stx
+                                 (string->symbol (format "~a-~a" #'a #'b))) ()
+       [name #'(define (name args ...)
+                 body0 body ...)])]))
+]
+
+Looks weird? Let's take a deep breath. Normally our transformer
+function is given syntax by Racket, and we pass that syntax to
+@racket[syntax-case].  But we can also create some syntax of our own,
+on the fly, and pass @italic{that} to @racket[syntax-case]. That's all
+we're doing here. The whole @racket[(datum->syntax ...)] expression is
+syntax that we're creating on the fly. We can give that to
+@racket[syntax-case], and match it using a pattern variable named
+@racket[name]. Voila, we have a new pattern variable. We can use it in
+a template, and its value will go in the template.
+
+We might have one more---just one, I promise!---small problem left.
+Let's try to use our new version:
+
+@i[
+(hyphen-define/wrong1.2 foo bar () #t)
 (foo-bar)
 ]
 
@@ -780,13 +797,47 @@ Stepper. It says now we're expanding to:
 (define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)
 ]
 
-Oh right: @racket[#'a] and @racket[#'b] are syntax objects, and
-@racket[format] is printing them as such. Instead we want the datum in
-the syntax objects (the symbols @racket[foo] and @racket[bar]). Let's
-use @racket[syntax->datum]:
+Oh right: @racket[#'a] and @racket[#'b] are syntax objects. Therefore
+
+@racketblock[(string->symbol (format "~a-~a" #'a #'b))]
+
+is something like
+
+@racketblock[|#<syntax:11:24foo>-#<syntax:11:28 bar>|]
+
+---the printed form of both syntax objects, joined by a hyphen.
+
+Instead we want the datum in the syntax objects (such as the symbols
+@racket[foo] and @racket[bar]). Let's use @racket[syntax->datum] to
+get it:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
+  (syntax-case stx ()
+    [(_ a b (args ...) body0 body ...)
+     (syntax-case (datum->syntax stx
+                                 (string->symbol (format "~a-~a"
+                                                         (syntax->datum #'a)
+                                                         (syntax->datum #'b)))) ()
+       [name #'(define (name args ...)
+                 body0 body ...)])]))
+(hyphen-define/ok1 foo bar () #t)
+(foo-bar)
+]
+
+And now it works!
+
+Now for two shortcuts.
+
+Instead of an additional, nested @racket[syntax-case] we could use
+@racket[with-syntax]@margin-note*{Another name for
+@racket[with-syntax] could be, "define pattern variable".}. This
+rearranges the @racket[syntax-case] to look more like a @racket[let]
+statement---first the name, then the value. Also it's more convenient
+if we need to define more than one pattern variable.
+
+@i[
+(define-syntax (hyphen-define/ok2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (with-syntax ([name (datum->syntax stx
@@ -795,45 +846,69 @@ use @racket[syntax->datum]:
                                                                 (syntax->datum #'b))))])
        #'(define (name args ...)
            body0 body ...))]))
-(hyphen-define/ok1 foo bar () #t)
+(hyphen-define/ok2 foo bar () #t)
 (foo-bar)
 ]
 
-And now it works!
+Whether you use an additional @racket[syntax-case] or use
+@racket[with-syntax], either way you are simply defining an additional
+pattern variable. Don't let the terminology and structure make it seem
+mysterious.
 
-By the way, there is a utility function in @racket[racket/syntax]
-called @racket[format-id] that lets us format identifier names more
+Also, there is a utility function in @racket[racket/syntax] called
+@racket[format-id] that lets us format identifier names more
 succinctly. As we've learned, we need to @racket[require] the module
 using @racket[for-syntax], since we need it at compile time:
 
 @i[
 (require (for-syntax racket/syntax))
-(define-syntax (hyphen-define/ok2 stx)
+(define-syntax (hyphen-define/ok3 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (with-syntax ([name (format-id stx "~a-~a" #'a #'b)])
        #'(define (name args ...)
            body0 body ...))]))
-(hyphen-define/ok2 bar baz () #t)
+(hyphen-define/ok3 bar baz () #t)
 (bar-baz)
 ]
 
 Using @racket[format-id] is convenient as it handles the tedium of
-converting from syntax to datum and back again.
+converting from syntax to symbol datum to string ... and all the way
+back.
 
+Finally, here's a variation that accepts any number of name parts that
+are joined with hyphens:
+
+@i[
+(require (for-syntax racket/string racket/syntax))
+(define-syntax (hyphen-define* stx)
+  (syntax-case stx ()
+    [(_ (names ...) (args ...) body0 body ...)
+     (let* ([names/sym (map syntax-e (syntax->list #'(names ...)))]
+            [names/str (map symbol->string names/sym)]
+            [name/str (string-join names/str "-")]
+            [name/sym (string->symbol name/str)])
+       (with-syntax ([name (datum->syntax stx name/sym)])
+         #`(define (name args ...)
+             body0 body ...)))]))
+(hyphen-define* (foo bar baz) (v) (* 2 v))
+(foo-bar-baz 50)
+]
 
 To review:
 
 @itemize[
 
+  @item{You can't use a pattern variable outside of a template. But
+you can use @racket[syntax] or @tt{#'} on a pattern variable to make
+an ad hoc "fun size" template.}
+
   @item{If you want to munge pattern variables for use in the
-template, @racket[with-syntax] is your friend.}
+template, @racket[with-syntax] is your friend, because it lets you
+create new pattern variables.}
 
-  @item{You will need to use @racket[syntax] or @tt{#'} on the pattern
-variables to turn them into "fun size" templates.}
-
-  @item{Usually you'll also need to use @racket[syntax->datum] to get
-the interesting value inside.}
+  @item{Usually you'll need to use @racket[syntax->datum] to get the
+interesting value inside.}
 
   @item{@racket[format-id] is convenient for formatting identifier
 names.}
@@ -844,10 +919,12 @@ names.}
 
 @subsection{Making our own @racket[struct]}
 
-In this example we'll pretend that Racket doesn't already have a
-@racket[struct] capability. Fortunately, we can define a macro to
-provide this feature. To keep things simple, our structure will be
-immutable (read-only) and it won't support inheritance.
+Let's apply what we just learned to a more-realistic example. We'll
+pretend that Racket doesn't already have a @racket[struct]
+capability. Fortunately, we can write a macro to provide our own
+system for defining and using structures.  To keep things simple, our
+structure will be immutable (read-only) and it won't support
+inheritance.
 
 Given a structure declaration like:
 
@@ -855,7 +932,7 @@ Given a structure declaration like:
 (our-struct name (field1 field2 ...))
 ]
 
-We need to define some procedures.
+We need to define some procedures:
 
 @itemize[
 
