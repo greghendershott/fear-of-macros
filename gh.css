@@ -1,5 +1,9 @@
 /* Override some default styles for a hopefully fresher look. */
 
+.strike {
+  text-decoration: line-through;
+}
+
 /*** racket.css ***/
 
 /* Monospace: */

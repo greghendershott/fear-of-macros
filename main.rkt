@@ -7,7 +7,8 @@
           (for-syntax racket/base)
           (for-label racket)
           (for-label racket/stxparam)
-          (for-label syntax/parse))
+          (for-label syntax/parse)
+          (for-label racket/splicing))
 @(define evaluator
    (parameterize ([sandbox-output 'string]
                   [sandbox-error-output 'string])
@@ -16,14 +17,18 @@
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
-@image["fear-of-macros.jpg"]
 @title[#:version ""]{Fear of Macros}
-@author[@hyperlink["https://github.com/greghendershott/fear-of-macros/issues"
+@author[@hyperlink["http://www.greghendershott.com"
                    "Greg Hendershott"]]
-@smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}
+@image["fear-of-macros.jpg"]
+@para[@smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}]
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
+@para{Feedback and corrections are @hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "welcome here"].}
+
+Contents:
+
 @table-of-contents{}
 
 @; ----------------------------------------------------------------------------
@@ -109,6 +114,7 @@ similar for macro. There is. One of the more-recent Racket macro
 enhancements is @racket[syntax-parse].
 
 
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{Transformers}
@@ -217,6 +223,7 @@ When Racket expands our program, it sees the occurrence of
 calls our function with the old syntax, and we return the new syntax,
 which is used to evaluate and run our program.
 
+@; ----------------------------------------------------------------------------
 
 @subsection{What's the input?}
 
@@ -298,6 +305,9 @@ When we want to transform syntax, we'll generally take the pieces we
 were given, maybe rearrange their order, perhaps change some of the
 pieces, and often introduce brand-new pieces.
 
+
+@; ----------------------------------------------------------------------------
+
 @subsection{Actually transforming the input}
 
 Let's write a transformer function that reverses the syntax it was
@@ -342,6 +352,7 @@ compiler, and @italic{that} syntax is evaluated:
 (values "i" "am" "backwards")
 ]
 
+@; ----------------------------------------------------------------------------
 
 @subsection{Compile time vs. run time}
 
@@ -509,6 +520,8 @@ So let's try that:
 (our-if-using-match-v2 #t "true" "false")
 ]
 
+@; ----------------------------------------------------------------------------
+
 @subsection{@racket[begin-for-syntax]}
 
 We used @racket[for-syntax] to @racket[require] the
@@ -577,6 +590,7 @@ them available at compile time.}
 }
 ]
 
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{Pattern matching: syntax-case and syntax-rules}
@@ -647,15 +661,17 @@ can appreciate @racket[define-syntax-rule] as a convenient shorthand,
 but not be scared of, or confused about, that for which it's
 shorthand.
 
-@subsection{Patterns and templates}
-
 Most of the materials I found for learning macros, including the
 Racket @italic{Guide}, do a very good job explaining how patterns
-work. I'm not going to regurgitate that here.
+and templates work. I'm not going to regurgitate that here.
 
-Instead, let's look at some ways we're likely to get tripped up.
+Sometimes, we need to go a step beyond the pattern and template. Let's
+look at some examples, how we can get confused, and how to get it
+working.
 
-@subsubsection{"A pattern variable can't be used outside of a template"}
+@; ----------------------------------------------------------------------------
+
+@subsection{"A pattern variable can't be used outside of a template"}
 
 Let's say we want to define a function with a hyphenated name, a-b,
 but we supply the a and b parts separately. The Racket @racket[struct]
@@ -826,6 +842,234 @@ names.}
 
 @; ----------------------------------------------------------------------------
 
+@subsection{Making our own @racket[struct]}
+
+In this example we'll pretend that Racket doesn't already have a
+@racket[struct] capability. Fortunately, we can define a macro to
+provide this feature. To keep things simple, our structure will be
+immutable (read-only) and it won't support inheritance.
+
+Given a structure declaration like:
+
+@racketblock[
+(our-struct name (field1 field2 ...))
+]
+
+We need to define some procedures.
+
+@itemize[
+
+@item{A constructor procedure whose name is the struct name. We'll
+represent structures as a @racket[vector]. The structure name will be
+element zero. The fields will be elements one onward.}
+
+@item{A predicate, whose name is the struct name with @tt{?}
+appended.}
+
+@item{For each field, an accessor procedure to get its value. These
+will be named struct-field (the name of the struct, a hyphen, and the
+field name).}
+
+]
+
+
+@#reader scribble/comment-reader
+(i
+(require (for-syntax racket/syntax))
+(define-syntax (our-struct stx)
+  (syntax-case stx ()
+    [(_ id (fields ...))
+     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+       #`(begin
+           ;; Define a constructor.
+           (define (id fields ...)
+             (apply vector (cons (quote id) (list fields ...))))
+           ;; Define a predicate.
+           (define (pred-id v)
+             (and (vector? v)
+                  (eq? (vector-ref v 0) 'id)))
+           ;; Define an accessor for each field.
+           #,@(for/list ([x (syntax->list #'(fields ...))]
+                         [n (in-naturals 1)])
+                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                              [ix n])
+                  #`(define (acc-id v)
+                      (unless (pred-id v)
+                        (error 'acc-id "~a is not a ~a struct" v 'id))
+                      (vector-ref v ix))))))]))
+
+;; Test it out
+(require rackunit)
+(our-struct foo (a b))
+(define s (foo 1 2))
+(check-true (foo? s))
+(check-false (foo? 1))
+(check-equal? (foo-a s) 1)
+(check-equal? (foo-b s) 2)
+(check-exn exn:fail?
+           (lambda () (foo-a "furble")))
+
+;; The tests passed.
+;; Next, what if someone tries to declare:
+(our-struct "blah" ("blah" "blah"))
+)
+
+The error message is not very helpful. It's coming from
+@racket[format-id], which is a private implementation detail of our macro.
+
+You may know that a @racket[syntax-case] clause can take an
+optional "guard" or "fender" expression.  Instead of
+
+@racketblock[
+[pattern template]
+]
+
+It can be:
+
+@racketblock[
+[pattern guard template]
+]
+
+Let's add a guard expression to our clause:
+
+@#reader scribble/comment-reader
+(i
+(require (for-syntax racket/syntax))
+(define-syntax (our-struct stx)
+  (syntax-case stx ()
+    [(_ id (fields ...))
+     ;; Guard or "fender" expression:
+     (for-each (lambda (x)
+                 (unless (identifier? x)
+                   (raise-syntax-error #f "not an identifier" stx x)))
+               (cons #'id (syntax->list #'(fields ...))))
+     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+       #`(begin
+           ;; Define a constructor.
+           (define (id fields ...)
+             (apply vector (cons (quote id) (list fields ...))))
+           ;; Define a predicate.
+           (define (pred-id v)
+             (and (vector? v)
+                  (eq? (vector-ref v 0) 'id)))
+           ;; Define an accessor for each field.
+           #,@(for/list ([x (syntax->list #'(fields ...))]
+                         [n (in-naturals 1)])
+                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                              [ix n])
+                  #`(define (acc-id v)
+                      (unless (pred-id v)
+                        (error 'acc-id "~a is not a ~a struct" v 'id))
+                      (vector-ref v ix))))))]))
+
+;; Now the same misuse gives a better error message:
+(our-struct "blah" ("blah" "blah"))
+)
+
+Later, we'll see how @racket[syntax-parse] makes it even easier to
+check usage and provide helpful messages about mistakes.
+
+
+@subsection{Using dot notation for nested hash lookups}
+
+The previous two examples used a macro to define functions whose names
+were made by joining identifiers provided to the macro. This example
+does the opposite: The identifier given to the macro is split into
+pieces.
+
+If you write programs for web services you deal with JSON, which is
+represented in Racket by a @racket[jsexpr?]. JSON often has
+dictionaries that contain other dictionaries. In a @racket[jsexpr?]
+these are represented by nested @racket[hasheq] tables.
+
+JavaScript you can use dot notation:
+
+@codeblock{
+foo = js.a.b.c;
+}
+
+In Racket it's not so convenient:
+
+@#reader scribble/comment-reader
+(i
+; Nested hasheqs typical of a jsexpr:
+(define js (hasheq 'a (hasheq 'b (hasheq 'c "value"))))
+; Typical annoying code to get something:
+(hash-ref (hash-ref (hash-ref js 'a) 'b) 'c)
+)
+
+We can write a helper function to make this a bit cleaner:
+
+@#reader scribble/comment-reader
+(i
+;; This helper function:
+(define/contract (hash-refs h ks [def #f])
+  ((hash? (listof any/c)) (any/c) . ->* . any)
+  (with-handlers ([exn:fail? (const (cond [(procedure? def) (def)]
+                                          [else def]))])
+    (for/fold ([h h])
+      ([k (in-list ks)])
+      (hash-ref h k))))
+
+;; Lets us say:
+(hash-refs js '(a b c))
+)
+
+That's not bad. Can we go even further and use a dot notation somewhat
+like JavaScript?
+
+@#reader scribble/comment-reader
+(i
+;; This macro:
+(require (for-syntax racket/syntax))
+(define-syntax (hash.refs stx)
+  (syntax-case stx ()
+    [(_)
+     (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
+                         stx #'chain)]
+    [(_ chain)
+     #'(hash.refs chain #f)]
+    [(_ chain default)
+     (unless (symbol? (syntax-e #'chain))
+       (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
+                           stx #'chain))
+     (let ([xs (map (lambda (x)
+                      (datum->syntax stx (string->symbol x)))
+                    (regexp-split #rx"\\." 
+                                  (symbol->string (syntax->datum #'chain))))])
+       (unless (and (>= (length xs) 2)
+                    (not (eq? (syntax-e (cadr xs)) '||)))
+         (raise-syntax-error #f "Expected hash.key" stx #'chain))
+       (with-syntax ([h (car xs)]
+                     [ks (cdr xs)])
+         #'(hash-refs h 'ks default)))]))
+;; Gives us "sugar" to say this:
+(hash.refs js.a.b.c)
+)
+
+It works!
+
+We've started to appreciate that our macros should give helpful
+messages when used in error. We tried to do that here. Let's
+deliberately elicit various errors. Are the messages helpful?
+
+@i[
+(hash.refs)
+(hash.refs 0)
+(hash.refs js)
+(hash.refs js.)
+]
+
+Not too bad.
+
+Maybe we're not convinced that writing @racket[(hash.refs js.a.b.c)]
+is really clearer than @racket[(hash-refs js '(a b c))]. Maybe we
+won't actually use this approach. But the Racket macro system makes it
+a possible choice.
+
+@; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
+
 @section{Syntax parameters}
 
 "Anaphoric if" or "aif" is a popular macro example. Instead of writing:
@@ -942,34 +1186,27 @@ it
 
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
 @section{Robust macros: syntax-parse}
 
 TO-DO.
+
 TO-DO.
+
 TO-DO.
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
-@section{Other questions}
+@section{What's the point of @racket[splicing-let]?}
 
-Hopefully I will answer these in the course of writing the other
-sections. But just in case, here's a running list:
+I stared at @racket[racket/splicing] for the longest time. What does
+it do? Why would I use it? Why is it in the Macros section of the
+reference?
 
-@subsection{What's the point of @racket[with-syntax]?}
-
-Done.
-
-@subsection{What's the point of @racket[begin-for-syntax]?}
-
-Done.
-
-@subsection{What's the point of @racket[racket/splicing]?}
-
-I stared at @racket[racket/splicing] for the longest time, not
-understanding exactly how it works, or why I'd want to use it. As with
-other aspects of Racket macros, step number one was to de-mythologize
-it. This:
+Step one, @elem[#:style "strike"]{cut a hole in the box}
+de-mythologize it. For example, using @racket[splicing-let] like this:
 
 @#reader scribble/comment-reader
 (i
@@ -983,7 +1220,7 @@ it. This:
 x
 )
 
-is shorthand for this:
+is equivalent to:
 
 @#reader scribble/comment-reader
 (i
@@ -998,10 +1235,10 @@ y
 )
 
 This is the classic Lisp/Scheme/Racket idiom sometimes called "let
-over lambda". @margin-note*{A 
+over lambda". @margin-note*{A
 @hyperlink["http://people.csail.mit.edu/gregs/ll1-discuss-archive-html/msg03277.html" "koan"]
-about closures and objects.} A closure hides @racket[y], which can't
-be accessed directly, only via @racket[get-y].
+about closures and objects.} A closure hides @racket[y], which can
+only be accessed via @racket[get-y].
 
 So why would we care about the splicing forms? They can be more
 concise, especially when there are multiple body forms:
@@ -1034,6 +1271,7 @@ The splicing variation is more convenient than the usual way:
 When there are many body forms---and you are generating them in a
 macro---the splicing variations can be much easier.
 
+@; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
 @section{References and Acknowledgments}
@@ -1081,6 +1319,7 @@ very good. The @italic{Guide} provides helpful examples and
 tutorials. The @italic{Reference} is very clear and precise.
 
 @; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
 
 @section{Epilogue}
 
@@ -1097,7 +1336,6 @@ later translated by D.T. Suzuki in his @italic{Essays in Zen
 Buddhism}.}
 }
 
-
 Translated into Racket:
 
 @racketblock[
@@ -1110,4 +1348,5 @@ Translated into Racket:
               (lambda ()
                 (and (eq? 'mountains 'mountains)
                      (eq? 'rivers 'rivers))))
+
 ]
