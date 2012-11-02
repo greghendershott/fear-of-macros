@@ -14,6 +14,10 @@
   white-space: inherit;
 }
 
+.RktValLink, .RktModLink {
+    color: #2626c0; /* NOT bright blue */
+}
+
 /* Serif: */
 .inheritedlbl {
   font-family: 'Fenix',serif;
