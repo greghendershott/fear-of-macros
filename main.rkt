@@ -837,6 +837,8 @@ Instead we want the datum in the syntax objects, such as the symbols
 
 And now it works!
 
+@subsubsection{@racket[with-syntax]}
+
 Now for two shortcuts.
 
 Instead of an additional, nested @racket[syntax-case], we could use
@@ -864,6 +866,8 @@ Whether you use an additional @racket[syntax-case] or use
 @racket[with-syntax], either way you are simply defining an additional
 pattern variable. Don't let the terminology and structure make it seem
 mysterious.
+
+@subsubsection{@racket[format-id]}
 
 Also, there is a utility function in @racket[racket/syntax] called
 @racket[format-id] that lets us format identifier names more
