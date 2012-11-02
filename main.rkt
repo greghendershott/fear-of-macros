@@ -768,7 +768,8 @@ that using an additional, nested @racket[syntax-case]:
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (syntax-case (datum->syntax stx
-                                 (string->symbol (format "~a-~a" #'a #'b))) ()
+                                 (string->symbol (format "~a-~a" #'a #'b)))
+                  ()
        [name #'(define (name args ...)
                  body0 body ...)])]))
 ]
@@ -794,23 +795,19 @@ Let's try to use our new version:
 Hmm. @racket[foo-bar] is @italic{still} not defined. Back to the Macro
 Stepper. It says now we're expanding to:
 
-@racketblock[
-(define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)
-]
+@racketblock[(define (|#<syntax:11:24foo>-#<syntax:11:28 bar>|) #t)]
 
 Oh right: @racket[#'a] and @racket[#'b] are syntax objects. Therefore
 
 @racketblock[(string->symbol (format "~a-~a" #'a #'b))]
 
-is something like
+is the printed form of both syntax objects, joined by a hyphen:
 
 @racketblock[|#<syntax:11:24foo>-#<syntax:11:28 bar>|]
 
----the printed form of both syntax objects, joined by a hyphen.
-
-Instead we want the datum in the syntax objects (such as the symbols
-@racket[foo] and @racket[bar]). Let's use @racket[syntax->datum] to
-get it:
+Instead we want the datum in the syntax objects, such as the symbols
+@racket[foo] and @racket[bar]. Which we get using
+@racket[syntax->datum]:
 
 @i[
 (define-syntax (hyphen-define/ok1 stx)
@@ -819,7 +816,8 @@ get it:
      (syntax-case (datum->syntax stx
                                  (string->symbol (format "~a-~a"
                                                          (syntax->datum #'a)
-                                                         (syntax->datum #'b)))) ()
+                                                         (syntax->datum #'b))))
+                  ()
        [name #'(define (name args ...)
                  body0 body ...)])]))
 (hyphen-define/ok1 foo bar () #t)
