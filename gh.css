@@ -11,6 +11,7 @@
 .RktMod, .RktKw, .RktVar, .RktSym,
 .RktRes, .RktOut, .RktCmt, .RktVal, .hspace {
   font-family: monospace;
+  /* font-size: 95%; */
   white-space: inherit;
 }
 
