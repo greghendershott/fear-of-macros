@@ -4,14 +4,26 @@
   text-decoration: line-through;
 }
 
-/*** racket.css ***/
+/**********************************************************************/
+/* racket.css */
 
 /* Monospace: */
 .RktIn, .RktRdr, .RktPn, .RktMeta,
 .RktMod, .RktKw, .RktVar, .RktSym,
 .RktRes, .RktOut, .RktCmt, .RktVal, .hspace {
   font-family: monospace;
+  font-size: 95%;
   white-space: inherit;
+}
+
+.RktValLink, .RktModLink {
+  color: #2626c0; /* NOT bright blue */
+}
+
+.RktErr {
+  color: #c02626; /* NOT bright red */
+  font-family: monospace;
+  font-size: 95%;
 }
 
 /* Serif: */
@@ -24,14 +36,8 @@
   font-family: sans-serif;
 }
 
-.RktBlk {
-  background-color: #f8faf8;
-  white-space: inherit;
-  text-align: left;
-}
-
-
-/*** scribble.css ***/
+/**********************************************************************/
+/* scribble.css */
 
 /* Monospace: */
 .maincolumn, .refpara, .refelem, .tocset, .stt, .refparaleft, .refelemleft {
