@@ -496,21 +496,27 @@ We can write:
   (match (syntax->list stx)
     [(list name condition true-expr false-expr)
      (datum->syntax stx `(cond [,condition ,true-expr]
-                               [else ,false-expr]))]))
+                               [else ,false-expr]))]))]
+
+Great. Now let's try using it:
+
+@i[
 (our-if-using-match #t "true" "false")
 ]
 
-But wait, we can't. It's complaining that @racket[match] isn't
-defined. We haven't required the @racket[racket/match] module?
+Oops. It's complaining that @racket[match] isn't defined.
 
-It turns out we haven't. Remember, this transformer function is
-working at compile time, not run time. And at compile time, only
-@racket[racket/base] is required for you automatically. If we want
-something like @racket[racket/match], we have to require it
-ourselves---and require it @italic{for compile time}. Instead of using
-plain @racket[(require racket/match)], the way to say this is to use
-@racket[(require (for-syntax racket/match))]---the @racket[for-syntax]
-part meaning, "for compile time".
+Our transformer function is working at compile time, not run time. And
+at compile time, only @racket[racket/base] is required for you
+automatically---not the full @racket[racket].
+
+Anything beyond @racket[racket/base], we have to require
+ourselves---and require it for compile time using the
+@racket[for-syntax] form of @racket[require].
+
+In this case, instead of using plain @racket[(require racket/match)],
+we want @racket[(require (for-syntax racket/match))]---the
+@racket[for-syntax] part meaning, "for compile time".
 
 So let's try that:
 
