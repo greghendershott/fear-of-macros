@@ -79,7 +79,7 @@ understand the answers and solutions.
 
 @; ----------------------------------------------------------------------------
 
-@section{The plan of attack}
+@section{Our plan of attack}
 
 The macro system you will mostly want to use for production-quality
 macros is called @racket[syntax-parse]. And don't worry, we'll get to
@@ -89,10 +89,10 @@ But if we start there, you're likely to feel overwhelmed by concepts
 and terminology, and get very confused. I did.
 
 1. Instead let's start with the basics: A syntax object and a function
-to change it (a "transformer"). We'll work at that level for awhile to
+to change it---a "transformer". We'll work at that level for awhile to
 get comfortable and to de-mythologize this whole macro business.
 
-2. Next, we'll realize that some pattern-matching would make life
+2. Soon we'll realize that pattern-matching would make life
 easier. We'll learn about @racket[syntax-case] and its shorthand
 cousin, @racket[define-syntax-rule]. We'll discover we can get
 confused if we want to munge pattern variables before sticking them
@@ -117,7 +117,7 @@ enhancements is @racket[syntax-parse].
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
-@section{Transformers}
+@section{Transform!}
 
 @verbatim[#:indent 2]{
 YOU ARE INSIDE A ROOM.
@@ -227,9 +227,9 @@ which is used to evaluate and run our program.
 
 @subsection{What's the input?}
 
-Our examples so far ignored the input syntax, and output a fixed
-syntax. But instead of throwing away the input, usually we want to
-transform the input.
+Our examples so far have ignored the input syntax and output some
+fixed syntax. But typically we will want to transform in the input
+syntax into somehing else.
 
 Let's start by looking closely at what the input actually @italic{is}:
 
@@ -244,7 +244,7 @@ The @racket[(print stx)] shows what our transformer is given: a syntax
 object.
 
 A syntax object consists of several things. The first part is the
-s-expression representing the code, such as @racket['(+ 1 2)].
+S-expression representing the code, such as @racket['(+ 1 2)].
 
 Racket syntax is also decorated with some interesting information such
 as the source file, line number, and column. Finally, it has
@@ -260,7 +260,7 @@ stx
 ]
 
 Now let's use functions that access the syntax object. The source
-information functions:
+information functions are:
 
 @margin-note{@racket[(syntax-source stx)] is returning @racket['eval],
 only becaue of how I'm generating this documentation, using an
@@ -274,7 +274,7 @@ somthing like "my-file.rkt".}
 ]
 
 More interesting is the syntax "stuff" itself. @racket[syntax->datum]
-converts it completely into an s-expression:
+converts it completely into an S-expression:
 
 @i[
 (syntax->datum stx)
@@ -297,9 +297,8 @@ In most cases, @racket[syntax->list] gives the same result as
 (syntax->list stx)
 ]
 
-When would @racket[syntax-e] and @racket[syntax->list] differ? Let's
-not get side-tracked now.
-
+(When would @racket[syntax-e] and @racket[syntax->list] differ? Let's
+not get side-tracked now.)
 
 When we want to transform syntax, we'll generally take the pieces we
 were given, maybe rearrange their order, perhaps change some of the
@@ -356,9 +355,9 @@ compiler, and @italic{that} syntax is evaluated:
 
 @subsection{Compile time vs. run time}
 
-@codeblock[#:indent 10]{
+@codeblock0{
 (define-syntax (foo stx)
-  (make-pipe) ;This is not run time.
+  (make-pipe) ;Ce n'est pas le temps d'exécution
   #'(void))
 }
 
@@ -520,6 +519,8 @@ So let's try that:
 (our-if-using-match-v2 #t "true" "false")
 ]
 
+Joy.
+
 @; ----------------------------------------------------------------------------
 
 @subsection{@racket[begin-for-syntax]}
@@ -569,7 +570,7 @@ syntax without evaluating them. We can implement forms like
 
 @item{More good news is that there isn't some special, weird language
 for writing syntax transformers. We can write these transformer
-functions using the Racket language we already know and lovex.}
+functions using the Racket language we already know and love.}
 
 @item{The semi-bad news is that the familiarity can make it easy to forget
 that we're not working at run time. Sometimes that's important to
@@ -671,7 +672,7 @@ working.
 
 @; ----------------------------------------------------------------------------
 
-@subsection{"A pattern variable can't be used outside of a template"}
+@subsection{Pattern variable vs. template---fight!}
 
 Let's say we want to define a function with a hyphenated name, a-b,
 but we supply the a and b parts separately. The Racket @racket[struct]
@@ -754,13 +755,13 @@ Well that explains it. Instead, we wanted to expand to:
 Our template is using the symbol @racket[name] but we wanted its
 value, such as @racket[foo-bar] in this use of our macro.
 
-Can we think of something we already know that behaves like
-this---where using a variable in the template yields its value?  Sure
-we do: Pattern variables. Our pattern doesn't include @racket[name]
-because we don't expect it in the original syntax---indeed the whole
-point of this macro is to create it. So @racket[name] can't be in the
-main pattern. Fine---let's make an @italic{additional} pattern. We can
-do that using an additional, nested @racket[syntax-case]:
+Is there anything we already know that behaves like this---where using
+a variable in the template yields its value? Yes: Pattern
+variables. Our pattern doesn't include @racket[name] because we don't
+expect it in the original syntax---indeed the whole point of this
+macro is to create it. So @racket[name] can't be in the main
+pattern. Fine---let's make an @italic{additional} pattern. We can do
+that using an additional, nested @racket[syntax-case]:
 
 @i[
 (define-syntax (hyphen-define/wrong1.2 stx)
@@ -829,7 +830,7 @@ And now it works!
 
 Now for two shortcuts.
 
-Instead of an additional, nested @racket[syntax-case] we could use
+Instead of an additional, nested @racket[syntax-case], we could use
 @racket[with-syntax]@margin-note*{Another name for
 @racket[with-syntax] could be, "define pattern variable".}. This
 rearranges the @racket[syntax-case] to look more like a @racket[let]
@@ -901,7 +902,7 @@ To review:
 
   @item{You can't use a pattern variable outside of a template. But
 you can use @racket[syntax] or @tt{#'} on a pattern variable to make
-an ad hoc "fun size" template.}
+an ad hoc, "fun size" template.}
 
   @item{If you want to munge pattern variables for use in the
 template, @racket[with-syntax] is your friend, because it lets you
@@ -1057,9 +1058,15 @@ pieces.
 If you write programs for web services you deal with JSON, which is
 represented in Racket by a @racket[jsexpr?]. JSON often has
 dictionaries that contain other dictionaries. In a @racket[jsexpr?]
-these are represented by nested @racket[hasheq] tables.
+these are represented by nested @racket[hasheq] tables:
 
-JavaScript you can use dot notation:
+@#reader scribble/comment-reader
+(i
+; Nested `hasheq's typical of a jsexpr:
+(define js (hasheq 'a (hasheq 'b (hasheq 'c "value"))))
+)
+
+In JavaScript you can use dot notation:
 
 @codeblock{
 foo = js.a.b.c;
@@ -1067,13 +1074,7 @@ foo = js.a.b.c;
 
 In Racket it's not so convenient:
 
-@#reader scribble/comment-reader
-(i
-; Nested hasheqs typical of a jsexpr:
-(define js (hasheq 'a (hasheq 'b (hasheq 'c "value"))))
-; Typical annoying code to get something:
-(hash-ref (hash-ref (hash-ref js 'a) 'b) 'c)
-)
+@racketblock[(hash-ref (hash-ref (hash-ref js 'a) 'b) 'c)]
 
 We can write a helper function to make this a bit cleaner:
 
@@ -1092,7 +1093,7 @@ We can write a helper function to make this a bit cleaner:
 (hash-refs js '(a b c))
 )
 
-That's not bad. Can we go even further and use a dot notation somewhat
+That's better. Can we go even further and use a dot notation somewhat
 like JavaScript?
 
 @#reader scribble/comment-reader
