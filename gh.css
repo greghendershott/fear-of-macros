@@ -4,7 +4,8 @@
   text-decoration: line-through;
 }
 
-/*** racket.css ***/
+/**********************************************************************/
+/* racket.css */
 
 /* Monospace: */
 .RktIn, .RktRdr, .RktPn, .RktMeta,
@@ -42,7 +43,8 @@
 }
 
 
-/*** scribble.css ***/
+/**********************************************************************/
+/* scribble.css */
 
 /* Monospace: */
 .maincolumn, .refpara, .refelem, .tocset, .stt, .refparaleft, .refelemleft {
