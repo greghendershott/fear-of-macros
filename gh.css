@@ -20,6 +20,12 @@
   color: #2626c0; /* NOT bright blue */
 }
 
+.RktErr {
+  color: #c02626; /* NOT bright red */
+  font-family: monospace;
+  font-size: 95%;
+}
+
 /* Serif: */
 .inheritedlbl {
   font-family: 'Fenix',serif;
