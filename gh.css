@@ -29,10 +29,16 @@
   font-family: sans-serif;
 }
 
-.RktBlk {
+.SCodeFlow {
   background-color: #f8faf8;
   white-space: inherit;
   text-align: left;
+  border-top-width: 6px;
+  border-top-style: solid;
+  border-top-color: #f0f0f0;
+  border-left-width: 6px;
+  border-left-style: solid;
+  border-left-color: #f0f0f0;
 }
 
 
