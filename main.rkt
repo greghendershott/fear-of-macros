@@ -1100,12 +1100,43 @@ like JavaScript?
 (require (for-syntax racket/syntax))
 (define-syntax (hash.refs stx)
   (syntax-case stx ()
+    ;; If the optional `default' is missing, assume it's #f.
+    [(_ chain)
+     #'(hash.refs chain #f)]
+    [(_ chain default)
+     (let ([xs (map (lambda (x)
+                      (datum->syntax stx (string->symbol x)))
+                    (regexp-split #rx"\\." 
+                                  (symbol->string (syntax->datum #'chain))))])
+       (with-syntax ([h (car xs)]
+                     [ks (cdr xs)])
+         #'(hash-refs h 'ks default)))]))
+;; Gives us "sugar" to say this:
+(hash.refs js.a.b.c)
+;; Try finding a key that doesn't exist:
+(hash.refs js.blah)
+;; Try finding a key that doesn't exist, specifying the default:
+(hash.refs js.blah 'did-not-exist)
+)
+
+It works!
+
+We've started to appreciate that our macros should give helpful
+messages when used in error. Let's try to do that here.
+
+@#reader scribble/comment-reader
+(i
+(require (for-syntax racket/syntax))
+(define-syntax (hash.refs stx)
+  (syntax-case stx ()
+    ;; Check for no args at all
     [(_)
      (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
                          stx #'chain)]
     [(_ chain)
      #'(hash.refs chain #f)]
     [(_ chain default)
+     ;; Check that chain is a symbol, not e.g. a number or string
      (unless (symbol? (syntax-e #'chain))
        (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
                            stx #'chain))
@@ -1113,30 +1144,25 @@ like JavaScript?
                       (datum->syntax stx (string->symbol x)))
                     (regexp-split #rx"\\." 
                                   (symbol->string (syntax->datum #'chain))))])
+       ;; Check that we have at least hash.key
        (unless (and (>= (length xs) 2)
                     (not (eq? (syntax-e (cadr xs)) '||)))
          (raise-syntax-error #f "Expected hash.key" stx #'chain))
        (with-syntax ([h (car xs)]
                      [ks (cdr xs)])
          #'(hash-refs h 'ks default)))]))
-;; Gives us "sugar" to say this:
-(hash.refs js.a.b.c)
-)
-
-It works!
-
-We've started to appreciate that our macros should give helpful
-messages when used in error. We tried to do that here. Let's
-deliberately elicit various errors. Are the messages helpful?
-
-@i[
+;; See if we catch each of the misuses
 (hash.refs)
 (hash.refs 0)
 (hash.refs js)
 (hash.refs js.)
-]
+)
 
-Not too bad.
+Not too bad. Of course, the version with error-checking is quite a bit
+longer. Error-checking code generally tends to obscure the logic, and
+does here. Fortuantely we'll soon see how @racket[syntax-parse] can
+help mitigate that, in much the same way as contracts in normal
+Racket or types in Typed Racket.
 
 Maybe we're not convinced that writing @racket[(hash.refs js.a.b.c)]
 is really clearer than @racket[(hash-refs js '(a b c))]. Maybe we
