@@ -14,6 +14,11 @@
                   [sandbox-error-output 'string])
      (make-evaluator 'racket)))
 
+@(define typed/evaluator
+   (parameterize ([sandbox-output 'string]
+                  [sandbox-error-output 'string])
+     (make-evaluator 'typed/racket)))
+
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
@@ -1046,7 +1051,7 @@ Later, we'll see how @racket[syntax-parse] makes it even easier to
 check usage and provide helpful messages about mistakes.
 
 
-@subsection{Using dot notation for nested hash lookups}
+@subsection[#:tag "hash.refs"]{Using dot notation for nested hash lookups}
 
 The previous two examples used a macro to define functions whose names
 were made by joining identifiers provided to the macro. This example
@@ -1228,7 +1233,7 @@ conflict with a variable named @racket[x] in an outer scope:
   (printf "The outer `x' is ~s\n" x))
 ]
 
-When your macros also respect lexical scoping, it's easy to write
+When our macros also respect lexical scoping, it's easier to write
 reliable macros that behave predictably.
 
 So that's wonderful default behavior. But @italic{sometimes} we want
@@ -1285,18 +1290,6 @@ But we can still define @racket[it] as a normal variable:
 (define it 10)
 it
 ]
-
-
-@; ----------------------------------------------------------------------------
-@; ----------------------------------------------------------------------------
-
-@section{Robust macros: syntax-parse}
-
-TO-DO.
-
-TO-DO.
-
-TO-DO.
 
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
@@ -1370,8 +1363,136 @@ The splicing variation is more convenient than the usual way:
               x))))
 )
 
-When there are many body forms---and you are generating them in a
+When there are many body forms---and we're generating them in a
 macro---the splicing variations can be much easier.
+
+@; ----------------------------------------------------------------------------
+@; ----------------------------------------------------------------------------
+
+@section{Robust macros: syntax-parse}
+
+Functions can be used in error. So can macros.
+
+@subsection{Error-handling strategies for functions}
+
+With plain old functions, we have several choices.
+
+1. Don't check at all.
+
+@#reader scribble/comment-reader
+(i
+(define (misuse s)
+  (string-append s " snazzy suffix"))
+;; User of the function:
+(misuse 0)
+;; I guess I goofed, but -- what is this "string-append" of which you
+;; speak??
+)
+
+The problem is that the resulting error message will be confusing. Our
+user thinks they're calling @racket[misuse], but is getting an error
+message from @racket[string-append].  In this simple example they
+could probably guess what's happening, but in most cases they won't.
+
+2. Write some error handling code.
+
+@#reader scribble/comment-reader
+(i
+(define (misuse s)
+  (unless (string? s)
+    (error 'misuse "expected a string, but got ~a" s))
+  (string-append s " snazzy suffix"))
+;; User of the function:
+(misuse 0)
+;; I goofed, and understand why! It's a shame the writer of the
+;; function had to work so hard to tell me.
+)
+
+Unfortunately the error code tends to overwhelm and/or obscure our
+function definition. Also, the error message is good but not
+great. Improving it would require even more error code.
+
+3. Use a contract.
+
+@#reader scribble/comment-reader
+(i
+(define/contract (misuse s)
+  (string? . -> . string?)
+  (string-append s " snazzy suffix"))
+;; User of the function:
+(misuse 0)
+;; I goofed, and understand why! I hear the writer of the function is
+;; happier.
+)
+
+This is the best of both worlds.
+
+The contract is a simple and concise. Even better, it's
+declarative. We say what we want, without needing to spell out what to
+do.
+
+On the other hand the user of our function gets a very detailed error
+message. Plus, the message is in a standard, familiar format.
+
+4. Use Typed Racket.
+
+@codeblock{#lang typed/racket}
+@interaction[#:eval typed/evaluator
+(: misuse (String -> String))
+(define (misuse s)
+  (string-append s " snazzy suffix"))
+;; User of the function:
+(misuse 0)
+;; I goofed, and understand why! I hear the writer of the function is
+;; a cheerful type.
+]
+
+With respect to error handling, Typed Racket has the same benefits as
+contracts. Good.
+
+@subsection{Error-handling strategies for macros}
+
+For macros, we have similar choices.
+
+1. Ignore the possibility of misuse. This choice is even worse for
+macros. The default error messages are even less likely to make sense,
+much less help our user know what to do.
+
+2. Write error-handling code. We saw how much this complicated our
+macros in our example of @secref["hash.refs"]. And while we're still
+learning how to write macros, we especially don't want more cognitive
+load and obfuscation.
+
+3. Use @racket[syntax/parse]. For macros, this is the equivalent of
+using contracts or types for functions. We can declare that input
+pattern elements must be certain kinds of things, such as an
+identifier. Instead of "types", the things are referred to as "syntax
+classes". There are predefined syntax classes, plus we can define our own.
+
+@subsection{Using @racket[syntax/parse]}
+
+November 1, 2012: So here's the deal. After writing everything up to
+this point, I sat down to re-read the documentation for
+@racket[syntax/parse]. It was...very understandable. I didn't feel
+confused.
+
+@codeblock{
+<span style='accent: "Kenau-Reeves"'>
+Whoa.
+</span>
+}
+
+Why? The documentation is written very well. Also, everything up to
+this point prepared me to appreciate what @racket[syntax/parse] does,
+and why. That leaves the "how" of using it, which seems pretty
+straightforward, so far.
+
+This might well be a temporary state of me "not knowing what I don't
+know". As I dig in and use it more, maybe I'll discover something
+confusing or tricky. If/when I do, I'll come back here and update
+this.
+
+But for now I'll focus on improving the previous parts.
 
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
