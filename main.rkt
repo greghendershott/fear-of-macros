@@ -1385,7 +1385,8 @@ Functions can be used in error. So can macros.
 
 @subsection{Error-handling strategies for functions}
 
-With plain old functions, we have several choices.
+With plain old functions, we have several choices how to handle
+misuse.
 
 1. Don't check at all.
 
@@ -1451,10 +1452,7 @@ message. Plus, the message is in a standard, familiar format.
 (: misuse (String -> String))
 (define (misuse s)
   (string-append s " snazzy suffix"))
-;; User of the function:
 (misuse 0)
-;; I goofed, and understand why! I hear the writer of the function is
-;; a cheerful type.
 ]
 
 With respect to error handling, Typed Racket has the same benefits as
@@ -1476,8 +1474,9 @@ load and obfuscation.
 3. Use @racket[syntax/parse]. For macros, this is the equivalent of
 using contracts or types for functions. We can declare that input
 pattern elements must be certain kinds of things, such as an
-identifier. Instead of "types", the things are referred to as "syntax
-classes". There are predefined syntax classes, plus we can define our own.
+identifier. Instead of "types", the kinds are referred to as "syntax
+classes". There are predefined syntax classes, plus we can define our
+own.
 
 @subsection{Using @racket[syntax/parse]}
 
@@ -1541,7 +1540,8 @@ conflating two different issues :), Shriram Krishnamurthi looked at an
 early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
 Robby Findler also encouraged me. Matthew Flatt showed me how to make
 a Scribble @racket[interaction] print @racket[syntax] as
-@racket["syntax"] rather than as @racket["#'"].
+@racket["syntax"] rather than as @racket["#'"]. Jay McCarthy helped me
+catch some mistakes and confusions.
 
 Finally, I noticed something strange. After writing much of this, when
 I returned to some parts of the Racket documentation, I noticed it had
