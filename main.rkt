@@ -1301,6 +1301,8 @@ But we can still define @racket[it] as a normal variable:
 it
 ]
 
+For a deeper look, see @hyperlink["http://www.schemeworkshop.org/2011/papers/Barzilay2011.pdf" "Keeping it Clean with Syntax Parameters"].
+
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
