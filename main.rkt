@@ -242,7 +242,7 @@ Let's start by looking closely at what the input actually @italic{is}:
 (define-syntax (show-me stx)
   (print stx)
   #'(void))
-(show-me '(i am a list))
+(show-me '(+ 1 2))
 ]
 
 The @racket[(print stx)] shows what our transformer is given: a syntax
@@ -674,8 +674,9 @@ but not be scared of, or confused about, that for which it's
 shorthand.
 
 Most of the materials I found for learning macros, including the
-Racket @italic{Guide}, do a very good job explaining how patterns
-and templates work. I'm not going to regurgitate that here.
+Racket @italic{Guide}, do a very good job explaining
+@hyperlink["http://docs.racket-lang.org/guide/pattern-macros.html" "how
+patterns and templates work"]. So I won't regurgitate that here.
 
 Sometimes, we need to go a step beyond the pattern and template. Let's
 look at some examples, how we can get confused, and how to get it
@@ -890,8 +891,10 @@ Using @racket[format-id] is convenient as it handles the tedium of
 converting from syntax to symbol datum to string ... and all the way
 back.
 
-Finally, here's a variation that accepts any number of name parts that
-are joined with hyphens:
+@subsubsection{Another example}
+
+Finally, here's a variation that accepts an arbitary number of name
+parts to be joined with hyphens:
 
 @i[
 (require (for-syntax racket/string racket/syntax))
@@ -908,6 +911,7 @@ are joined with hyphens:
 (hyphen-define* (foo bar baz) (v) (* 2 v))
 (foo-bar-baz 50)
 ]
+
 
 To review:
 
@@ -1300,6 +1304,8 @@ But we can still define @racket[it] as a normal variable:
 (define it 10)
 it
 ]
+
+For a deeper look, see @hyperlink["http://www.schemeworkshop.org/2011/papers/Barzilay2011.pdf" "Keeping it Clean with Syntax Parameters"].
 
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
