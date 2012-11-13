@@ -845,7 +845,7 @@ Next, some shortcuts.
 
 Instead of an additional, nested @racket[syntax-case], we could use
 @racket[with-syntax]@margin-note*{Another name for
-@racket[with-syntax] could be, "define pattern variable".}. This
+@racket[with-syntax] could be, "with new pattern variable".}. This
 rearranges the @racket[syntax-case] to look more like a @racket[let]
 statement---first the name, then the value. Also it's more convenient
 if we need to define more than one pattern variable.
@@ -864,40 +864,47 @@ if we need to define more than one pattern variable.
 (foo-bar)
 ]
 
+Again, @racket[with-syntax] is simply @racket[syntax-case] rearranged:
+
+@racketblock[
+(syntax-case #,(italic "<syntax>") () [#,(bold "<pattern>") <body>])
+(with-syntax ([#,(bold "<pattern>") #,(italic "<syntax>")]) <body>)
+]
+
 Whether you use an additional @racket[syntax-case] or use
-@racket[with-syntax], either way you are simply defining an additional
-pattern variable. Don't let the terminology and structure make it seem
-mysterious.
+@racket[with-syntax], either way you are simply defining additional
+pattern variables. Don't let the terminology and structure make it
+seem mysterious.
 
 @subsubsection{@racket[with-syntax*]}
 
-We may recall that @racket[let] doesn't let us use a definition in a
-subsequent clause:
+We know that @racket[let] doesn't let us use a binding in a subsequent
+one:
 
 @i[
 (let ([a 0]
       [b a])
-  (values a b))
+  b)
 ]
 
-We could nest @racket[let]s:
+Instead we can nest @racket[let]s:
 
 @i[
 (let ([a 0])
   (let ([b a])
-    (values a b)))
+    b))
 ]
 
-Or we could use @racket[let*]:
+Or use a shorthand for nesting, @racket[let*]:
 
 @i[
 (let* ([a 0]
-       [b 0])
-  (values a b))
+       [b a])
+  b)
 ]
 
-Similarly there is a @racket[with-syntax*] variation of
-@racket[with-syntax]:
+Similarly, instead of writing nested @racket[with-syntax]s, we can use
+@racket[with-syntax*]:
 
 @i[
 (require (for-syntax racket/syntax))
