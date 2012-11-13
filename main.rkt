@@ -8,7 +8,8 @@
           (for-label racket)
           (for-label racket/stxparam)
           (for-label syntax/parse)
-          (for-label racket/splicing))
+          (for-label racket/splicing)
+          (for-label racket/syntax))
 @(define evaluator
    (parameterize ([sandbox-output 'string]
                   [sandbox-error-output 'string])
