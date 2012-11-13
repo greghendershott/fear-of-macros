@@ -41,9 +41,15 @@ EOF
 (define all (string-append metas web-font ga-code </head>))
 (define subst (regexp-replace* "\n" all "")) ;minify
 
-(define old (file->string "main.html"))
-(define new (regexp-replace "</head>" old subst))
-(with-output-to-file (build-path 'same "index.html")
-  (lambda () (display new))
-  #:mode 'text
-  #:exists 'replace)
+(define (do-file path)
+  (define old (file->string path))
+  (define new (regexp-replace </head> old subst))
+  (with-output-to-file path
+    (lambda () (display new))
+    #:mode 'text
+    #:exists 'replace))
+
+(for ([path (find-files (lambda (path)
+                          (regexp-match? #rx"\\.html" path))
+                        (build-path 'same "index"))])
+  (do-file path))

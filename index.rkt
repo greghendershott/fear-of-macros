@@ -606,7 +606,7 @@ them available at compile time.}
 @; ----------------------------------------------------------------------------
 @; ----------------------------------------------------------------------------
 
-@section{Pattern matching: syntax-case and syntax-rules}
+@section[#:tag "pattern-matching"]{Pattern matching: syntax-case and syntax-rules}
 
 Most useful syntax transformers work by taking some input syntax, and
 rearranging the pieces into something else.  As we saw, this is
@@ -1493,8 +1493,8 @@ great. Improving it would require even more error code.
   (string-append s " snazzy suffix"))
 ;; User of the function:
 (misuse 0)
-;; I goofed, and understand why! I hear the writer of the function is
-;; happier.
+;; I goofed, and understand why! I'm happier, and I hear the writer of
+;; the function is happier, too.
 )
 
 This is the best of both worlds.
