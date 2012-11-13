@@ -339,10 +339,10 @@ Using @racket[cdr] slices off the first item of the list,
 @racket[reverse] changes it to @racket[(values "i" "am" "backwards")]:
 
 @i[
-(reverse (cdr '("backwards" "am" "i" values)))
+(reverse (cdr '(reverse-me "backwards" "am" "i" values)))
 ]
 
-Finally we use @racket[syntax->datum] to convert this back to
+Finally we use @racket[datum->syntax] to convert this back to
 @racket[syntax]:
 
 @i[
@@ -1547,7 +1547,8 @@ early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
 Robby Findler also encouraged me. Matthew Flatt showed me how to make
 a Scribble @racket[interaction] print @racket[syntax] as
 @racket["syntax"] rather than as @racket["#'"]. Jay McCarthy helped me
-catch some mistakes and confusions.
+catch some mistakes and confusions. Jon Rafkind pointed out some
+problems. Kieron Hardy reported a font issue and some typos.
 
 Finally, I noticed something strange. After writing much of this, when
 I returned to some parts of the Racket documentation, I noticed it had
