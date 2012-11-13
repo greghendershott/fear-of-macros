@@ -839,9 +839,9 @@ Instead we want the datum in the syntax objects, such as the symbols
 
 And now it works!
 
-@subsubsection{@racket[with-syntax]}
+Next, some shortcuts.
 
-Now for two shortcuts.
+@subsubsection{@racket[with-syntax]}
 
 Instead of an additional, nested @racket[syntax-case], we could use
 @racket[with-syntax]@margin-note*{Another name for
@@ -869,12 +869,59 @@ Whether you use an additional @racket[syntax-case] or use
 pattern variable. Don't let the terminology and structure make it seem
 mysterious.
 
+@subsubsection{@racket[with-syntax*]}
+
+We may recall that @racket[let] doesn't let us use a definition in a
+subsequent clause:
+
+@i[
+(let ([a 0]
+      [b a])
+  (values a b))
+]
+
+We could nest @racket[let]s:
+
+@i[
+(let ([a 0])
+  (let ([b a])
+    (values a b)))
+]
+
+Or we could use @racket[let*]:
+
+@i[
+(let* ([a 0]
+       [b 0])
+  (values a b))
+]
+
+Similarly there is a @racket[with-syntax*] variation of
+@racket[with-syntax]:
+
+@i[
+(require (for-syntax racket/syntax))
+(define-syntax (foo stx)
+  (syntax-case stx ()
+    [(_ a)
+      (with-syntax* ([b #'a]
+                     [c #'b])
+        #'c)]))
+]
+
+One gotcha is that @racket[with-syntax*] isn't provided by
+@racket[racket/base]. We must @racket[(require (for-syntax
+racket/syntax))]. Otherwise we may get a rather bewildering error
+message:
+
+@italic{@tt{...: ellipses not allowed as an expression in: ...}}.
+
+
 @subsubsection{@racket[format-id]}
 
-Also, there is a utility function in @racket[racket/syntax] called
+There is a utility function in @racket[racket/syntax] called
 @racket[format-id] that lets us format identifier names more
-succinctly. As we've learned, we need to @racket[require] the module
-using @racket[for-syntax], since we need it at compile time:
+succinctly than what we did above:
 
 @i[
 (require (for-syntax racket/syntax))
