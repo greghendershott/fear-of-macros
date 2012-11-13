@@ -339,10 +339,10 @@ Using @racket[cdr] slices off the first item of the list,
 @racket[reverse] changes it to @racket[(values "i" "am" "backwards")]:
 
 @i[
-(reverse (cdr '("backwards" "am" "i" values)))
+(reverse (cdr '(reverse-me "backwards" "am" "i" values)))
 ]
 
-Finally we use @racket[syntax->datum] to convert this back to
+Finally we use @racket[datum->syntax] to convert this back to
 @racket[syntax]:
 
 @i[
