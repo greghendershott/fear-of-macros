@@ -1569,45 +1569,41 @@ But for now I'll focus on improving the previous parts.
 
 @section{References and Acknowledgments}
 
-Eli Barzliay's blog post, 
+Eli Barzliay's blog post,
 @hyperlink["http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html" "Writing
 ‘syntax-case’ Macros"], helped me understand many key details and
-concepts. It also inspired me to use a "bottom-up" approach. However
-he wrote for a specific audience. If you're not already familiar with
-un-hygienic defmacro style macros, it may seem slightly weird to the
-extent it's trying to convince you to change an opinion you don't
-have.  I'm writing for people who don't have any opinion about macros
-at all, except maybe that macros seem scary and daunting.
+concepts, and inspired me to use a "bottom-up" approach.
 
-Eli wrote another blog post, 
+Eli wrote another blog post,
 @hyperlink["http://blog.racket-lang.org/2008/02/dirty-looking-hygiene.html" "Dirty
-Looking Hygiene"], which explains syntax-parameterize. I relied
-heavily on that, mostly just updating it since his post was written
-before PLT Scheme was renamed to Racket.
+Looking Hygiene"], which explains @racket[syntax-parameterize]. I
+relied heavily on that, mostly just updating it since his post was
+written before PLT Scheme was renamed to Racket.
 
 Matthew Flatt's
 @hyperlink["http://www.cs.utah.edu/plt/publications/macromod.pdf" "Composable
-and Compilable Macros: You Want it When?"] explains how Racket handles
-compile time vs. run time.
+and Compilable Macros: You Want it When? (PDF)"] explains how Racket
+handles compile time vs. run time.
 
 @hyperlink["http://www.scheme.com/tspl4/syntax.html#./syntax:h0" "Chapter
 8"] of @italic{The Scheme Programming Language} by Kent Dybvig
-explains @racket[syntax-rules] and @racket[syntax-case]. Although
-more "formal" in tone, you may find it helpful to read it. You never
-know which explanation or examples of something will click for you.
+explains @racket[syntax-rules] and @racket[syntax-case].
 
-After initially wondering if I was asking the wrong question and
-conflating two different issues :), Shriram Krishnamurthi looked at an
-early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
-Robby Findler also encouraged me. Matthew Flatt showed me how to make
-a Scribble @racket[interaction] print @racket[syntax] as
-@racket["syntax"] rather than as @racket["#'"]. Jay McCarthy helped me
-catch some mistakes and confusions. Jon Rafkind pointed out some
-problems. Kieron Hardy reported a font issue and some typos.
+@hyperlink["http://www.ccs.neu.edu/racket/pubs/icfp10-cf.pdf" "Fortifying
+Macros (PDF)"] is the paper by Ryan Culpepper and Matthias Felleisen
+introducing @racket[syntax-parse].
+
+Shriram Krishnamurthi looked at a very early draft and encouraged me
+to keep going. Sam Tobin-Hochstadt and Robby Findler also encouraged
+me. Matthew Flatt showed me how to make a Scribble
+@racket[interaction] print @racket[syntax] as @racket["syntax"] rather
+than as @racket["#'"]. Jay McCarthy helped me catch some mistakes and
+confusions. Jon Rafkind provided suggestions. Kieron Hardy reported a
+font issue and some typos.
 
 Finally, I noticed something strange. After writing much of this, when
 I returned to some parts of the Racket documentation, I noticed it had
-improved since I last read it. Of course, it was the same. I'd
+improved since I last read it. Of course, it was the same; I'd
 changed. It's interesting how much of what we already know is
 projected between the lines. My point is, the Racket documentation is
 very good. The @italic{Guide} provides helpful examples and

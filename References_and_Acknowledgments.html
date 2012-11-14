@@ -2,32 +2,26 @@
 <html><head><meta http-equiv="content-type" content="text-html; charset=utf-8" /><title>8&nbsp;References and Acknowledgments</title><link rel="stylesheet" type="text/css" href="scribble.css" title="default" /><link rel="stylesheet" type="text/css" href="racket.css" title="default" /><link rel="stylesheet" type="text/css" href="scribble-style.css" title="default" /><link rel="stylesheet" type="text/css" href="gh.css" title="default" /><script type="text/javascript" src="scribble-common.js"></script><!--[if IE 6]><style type="text/css">.SIEHidden { overflow: hidden; }</style><![endif]--><meta name="keywords" content="Racket,macros,Scheme"><meta name="description" content="Practical Racket macros"><meta name="author" content="Greg Hendershott"><meta name="charset" content="utf-8"><link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'><script type="text/javascript">var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-29709446-1']);_gaq.push(['_setDomainName', 'greghendershott.com']);_gaq.push(['_trackPageview']);(function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script></head><body id="scribble-racket-lang-org"><div class="tocset"><div class="tocview"><div class="tocviewlist" style="margin-bottom: 1em;"><div class="tocviewtitle"><table cellspacing="0" cellpadding="0"><tr><td style="width: 1em;"><a href="javascript:void(0);" title="Expand/Collapse" class="tocviewtoggle" onclick="TocviewToggle(this,&quot;tocview_0&quot;);">&#9660;</a></td><td></td><td><a href="index.html" class="tocviewlink" pltdoc="x">Fear of Macros</a></td></tr></table></div><div class="tocviewsublistonly" style="display: block;" id="tocview_0"><table cellspacing="0" cellpadding="0"><tr><td align="right">1&nbsp;</td><td><a href="Preface.html" class="tocviewlink" pltdoc="x">Preface</a></td></tr><tr><td align="right">2&nbsp;</td><td><a href="Our_plan_of_attack.html" class="tocviewlink" pltdoc="x">Our plan of attack</a></td></tr><tr><td align="right">3&nbsp;</td><td><a href="Transform_.html" class="tocviewlink" pltdoc="x">Transform!</a></td></tr><tr><td align="right">4&nbsp;</td><td><a href="pattern-matching.html" class="tocviewlink" pltdoc="x">Pattern matching:<span class="mywbr"> </span> syntax-<wbr></wbr>case and syntax-<wbr></wbr>rules</a></td></tr><tr><td align="right">5&nbsp;</td><td><a href="Syntax_parameters.html" class="tocviewlink" pltdoc="x">Syntax parameters</a></td></tr><tr><td align="right">6&nbsp;</td><td><a href="What_s_the_point_of_splicing-let_.html" class="tocviewlink" pltdoc="x">What&rsquo;s the point of <span class="RktSym"><span class="RktStxLink">splicing-<wbr></wbr>let</span></span>?</a></td></tr><tr><td align="right">7&nbsp;</td><td><a href="Robust_macros__syntax-parse.html" class="tocviewlink" pltdoc="x">Robust macros:<span class="mywbr"> </span> syntax-<wbr></wbr>parse</a></td></tr><tr><td align="right">8&nbsp;</td><td><a href="" class="tocviewselflink" pltdoc="x">References and Acknowledgments</a></td></tr><tr><td align="right">9&nbsp;</td><td><a href="Epilogue.html" class="tocviewlink" pltdoc="x">Epilogue</a></td></tr></table></div></div></div></div><div class="maincolumn"><div class="main"><div class="navsettop"><span class="navleft">&nbsp;&nbsp;</span><span class="navright"><a href="Robust_macros__syntax-parse.html" title="backward to &quot;7 Robust macros: syntax-parse&quot;" pltdoc="x">&larr; prev</a>&nbsp;&nbsp;<a href="index.html" title="up to &quot;Fear of Macros&quot;" pltdoc="x">up</a>&nbsp;&nbsp;<a href="Epilogue.html" title="forward to &quot;9 Epilogue&quot;" pltdoc="x">next &rarr;</a></span>&nbsp;</div><h3>8<tt>&nbsp;</tt><a name="(part._.References_and_.Acknowledgments)"></a>References and Acknowledgments</h3><p>Eli Barzliay&rsquo;s blog post,
 <a href="http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html">Writing
 &#8216;syntax-case&#8217; Macros</a>, helped me understand many key details and
-concepts. It also inspired me to use a "bottom-up" approach. However
-he wrote for a specific audience. If you&rsquo;re not already familiar with
-un-hygienic defmacro style macros, it may seem slightly weird to the
-extent it&rsquo;s trying to convince you to change an opinion you don&rsquo;t
-have.  I&rsquo;m writing for people who don&rsquo;t have any opinion about macros
-at all, except maybe that macros seem scary and daunting.</p><p>Eli wrote another blog post,
+concepts, and inspired me to use a "bottom-up" approach.</p><p>Eli wrote another blog post,
 <a href="http://blog.racket-lang.org/2008/02/dirty-looking-hygiene.html">Dirty
-Looking Hygiene</a>, which explains syntax-parameterize. I relied
-heavily on that, mostly just updating it since his post was written
-before PLT Scheme was renamed to Racket.</p><p>Matthew Flatt&rsquo;s
+Looking Hygiene</a>, which explains <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stxparam.html#(form._((lib._racket%2Fstxparam..rkt)._syntax-parameterize))" class="RktStxLink" pltdoc="x">syntax-parameterize</a></span>. I
+relied heavily on that, mostly just updating it since his post was
+written before PLT Scheme was renamed to Racket.</p><p>Matthew Flatt&rsquo;s
 <a href="http://www.cs.utah.edu/plt/publications/macromod.pdf">Composable
-and Compilable Macros: You Want it When?</a> explains how Racket handles
-compile time vs. run time.</p><p><a href="http://www.scheme.com/tspl4/syntax.html#./syntax:h0">Chapter
+and Compilable Macros: You Want it When? (PDF)</a> explains how Racket
+handles compile time vs. run time.</p><p><a href="http://www.scheme.com/tspl4/syntax.html#./syntax:h0">Chapter
 8</a> of <span style="font-style: italic">The Scheme Programming Language</span> by Kent Dybvig
-explains <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax-rules))" class="RktStxLink" pltdoc="x">syntax-rules</a></span> and <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax-case))" class="RktStxLink" pltdoc="x">syntax-case</a></span>. Although
-more "formal" in tone, you may find it helpful to read it. You never
-know which explanation or examples of something will click for you.</p><p>After initially wondering if I was asking the wrong question and
-conflating two different issues :), Shriram Krishnamurthi looked at an
-early draft and encouraged me to keep going. Sam Tobin-Hochstadt and
-Robby Findler also encouraged me. Matthew Flatt showed me how to make
-a Scribble <span class="RktSym">interaction</span> print <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax))" class="RktStxLink" pltdoc="x">syntax</a></span> as
-<span class="RktVal">"syntax"</span> rather than as <span class="RktVal">"#'"</span>. Jay McCarthy helped me
-catch some mistakes and confusions. Jon Rafkind pointed out some
-problems. Kieron Hardy reported a font issue and some typos.</p><p>Finally, I noticed something strange. After writing much of this, when
+explains <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax-rules))" class="RktStxLink" pltdoc="x">syntax-rules</a></span> and <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax-case))" class="RktStxLink" pltdoc="x">syntax-case</a></span>.</p><p><a href="http://www.ccs.neu.edu/racket/pubs/icfp10-cf.pdf">Fortifying
+Macros (PDF)</a> is the paper by Ryan Culpepper and Matthias Felleisen
+introducing <span class="RktSym"><a href="http://docs.racket-lang.org/syntax/Parsing_Syntax.html#(form._((lib._syntax%2Fparse..rkt)._syntax-parse))" class="RktStxLink" pltdoc="x">syntax-parse</a></span>.</p><p>Shriram Krishnamurthi looked at a very early draft and encouraged me
+to keep going. Sam Tobin-Hochstadt and Robby Findler also encouraged
+me. Matthew Flatt showed me how to make a Scribble
+<span class="RktSym">interaction</span> print <span class="RktSym"><a href="http://docs.racket-lang.org/reference/stx-patterns.html#(form._((lib._racket%2Fprivate%2Fstxcase-scheme..rkt)._syntax))" class="RktStxLink" pltdoc="x">syntax</a></span> as <span class="RktVal">"syntax"</span> rather
+than as <span class="RktVal">"#'"</span>. Jay McCarthy helped me catch some mistakes and
+confusions. Jon Rafkind provided suggestions. Kieron Hardy reported a
+font issue and some typos.</p><p>Finally, I noticed something strange. After writing much of this, when
 I returned to some parts of the Racket documentation, I noticed it had
-improved since I last read it. Of course, it was the same. I&rsquo;d
+improved since I last read it. Of course, it was the same; I&rsquo;d
 changed. It&rsquo;s interesting how much of what we already know is
 projected between the lines. My point is, the Racket documentation is
 very good. The <span style="font-style: italic">Guide</span> provides helpful examples and
