@@ -26,7 +26,7 @@ function GetPageArg(key, def) {
 
 function MergePageArgsIntoLink(a) {
   if (page_args.length == 0 ||
-      (!a.attributes["pltdoc"]) || (a.attributes["pltdoc"].value == ""))
+      (!a.attributes["data-pltdoc"]) || (a.attributes["data-pltdoc"].value == ""))
     return;
   a.href.search(/^([^?#]*)(?:\?([^#]*))?(#.*)?$/);
   if (RegExp.$2.length == 0) {
@@ -96,7 +96,7 @@ function GotoPLTRoot(ver, relative) {
 
 // Utilities ------------------------------------------------------------------
 
-normalize_rxs = [/\/\/+/g, /\/\.(\/|$)/, /\/[^\/]*\/\.\.(\/|$)/];
+var normalize_rxs = [/\/\/+/g, /\/\.(\/|$)/, /\/[^\/]*\/\.\.(\/|$)/];
 function NormalizePath(path) {
   var tmp, i;
   for (i = 0; i < normalize_rxs.length; i++)
