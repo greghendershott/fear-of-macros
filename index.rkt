@@ -1353,12 +1353,23 @@ If we try to use @racket[it] outside of an @racket[aif] form, and
 (displayln it)
 ]
 
-But we can still define @racket[it] as a normal variable:
+But we can still define @racket[it] as a normal variable in local
+definition contexts like:
 
 @i[
-(define it 10)
-it
+(let ([it 10])
+  it)
 ]
+
+or:
+
+@i[
+(define (foo)
+  (define it 10)
+  it)
+(foo)
+]
+
 
 For a deeper look, see @hyperlink["http://www.schemeworkshop.org/2011/papers/Barzilay2011.pdf" "Keeping it Clean with Syntax Parameters"].
 
