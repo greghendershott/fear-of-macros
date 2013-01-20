@@ -27,7 +27,7 @@
 @author[@hyperlink["http://www.greghendershott.com"
                    "Greg Hendershott"]]
 @image["fear-of-macros.jpg"]
-@para[@smaller{Copyright (c) 2012 by Greg Hendershott. All rights reserved.}]
+@para[@smaller{Copyright (c) 2012-2013 by Greg Hendershott. All rights reserved.}]
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
