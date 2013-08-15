@@ -4,8 +4,8 @@
 ;;
 ;; AFIK no way via Scribble to put something into the <head> section.
 ;;
-;; This reads "main.html", injects some stuff immediately before the
-;; </head> closing tag, writes to "index.html".
+;; This reads all HTML files and injects some stuff immediately before the
+;; </head> closing tag.
 
 (define web-font
   "<link href='http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet' type='text/css'>")
@@ -49,7 +49,9 @@ EOF
     #:mode 'text
     #:exists 'replace))
 
+(require racket/runtime-path)
+(define-runtime-path here ".")
 (for ([path (find-files (lambda (path)
                           (regexp-match? #rx"\\.html" path))
-                        (build-path 'same "index"))])
+                        here)])
   (do-file path))
