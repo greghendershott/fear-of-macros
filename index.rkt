@@ -234,8 +234,8 @@ which is used to evaluate and run our program.
 @subsection{What's the input?}
 
 Our examples so far have ignored the input syntax and output some
-fixed syntax. But typically we will want to transform in the input
-syntax into somehing else.
+fixed syntax. But typically we will want to transform the input syntax
+into something else.
 
 Let's start by looking closely at what the input actually @italic{is}:
 
@@ -1558,7 +1558,7 @@ this point, I sat down to re-read the documentation for
 confused.
 
 @codeblock{
-<span style='accent: "Kenau-Reeves"'>
+<span style='accent: "Keanu-Reeves"'>
 Whoa.
 </span>
 }
