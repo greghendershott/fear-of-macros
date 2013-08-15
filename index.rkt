@@ -1305,11 +1305,15 @@ conflict with a variable named @racket[x] in an outer scope:
 When our macros also respect lexical scoping, it's easier to write
 reliable macros that behave predictably.
 
-So that's wonderful default behavior. But @italic{sometimes} we want
-to introduce a magic variable on purpose---such as @racket[it] for
+So that's wonderful default behavior. But sometimes we want to
+introduce a magic variable on purpose---such as @racket[it] for
 @racket[aif].
 
-The way to do this is with a "syntax parameter", using
+There's a bad way to do this and a good way.
+
+The bad way is to use @racket[datum->syntax], which is tricky to use correctly. @margin-note*{See @hyperlink["http://www.schemeworkshop.org/2011/papers/Barzilay2011.pdf" "Keeping it Clean with Syntax Parameters (PDF)"].}
+
+The good way is with a syntax parameter, using
 @racket[define-syntax-parameter] and
 @racket[syntax-parameterize]. You're probably familiar with regular
 parameters in Racket:
