@@ -9,7 +9,8 @@ because I don't.
 
 ## Where to read it
 
-To read: http://www.greghendershott.com/fear-of-macros
+- [Multiple HTML files](http://www.greghendershott.com/fear-of-macros)
+- [One big HTML file](http://www.greghendershott.com/fear-of-macros/all.html)
 
 ## Feeback
 
