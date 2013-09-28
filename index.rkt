@@ -318,6 +318,9 @@ pieces, and often introduce brand-new pieces.
 Let's write a transformer function that reverses the syntax it was
 given:
 
+@margin-note{The @racket[values] at the end of the example allows the
+result to evaluate nicely.  Try
+@racket[(reverse-me "backwards" "am" "i")] to see why it's handy.}
 @i[
 (define-syntax (reverse-me stx)
   (datum->syntax stx (reverse (cdr (syntax->datum stx)))))
@@ -855,7 +858,7 @@ if we need to define more than one pattern variable.
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
      (with-syntax ([name (datum->syntax stx
-                                        (string->symbol (format "~a-~a" 
+                                        (string->symbol (format "~a-~a"
                                                                 (syntax->datum #'a)
                                                                 (syntax->datum #'b))))])
        #'(define (name args ...)
@@ -1180,7 +1183,7 @@ like JavaScript?
     [(_ chain default)
      (let ([xs (map (lambda (x)
                       (datum->syntax stx (string->symbol x)))
-                    (regexp-split #rx"\\." 
+                    (regexp-split #rx"\\."
                                   (symbol->string (syntax->datum #'chain))))])
        (with-syntax ([h (car xs)]
                      [ks (cdr xs)])
@@ -1216,7 +1219,7 @@ messages when used in error. Let's try to do that here.
                            stx #'chain))
      (let ([xs (map (lambda (x)
                       (datum->syntax stx (string->symbol x)))
-                    (regexp-split #rx"\\." 
+                    (regexp-split #rx"\\."
                                   (symbol->string (syntax->datum #'chain))))])
        ;; Check that we have at least hash.key
        (unless (and (>= (length xs) 2)
@@ -1286,7 +1289,7 @@ certain kind of mistake in our macros. The mistake is if our new
 syntax introduces a variable that accidentally conflicts with one in
 the code surrounding our macro.
 
-The Racket @italic{Reference} section, 
+The Racket @italic{Reference} section,
 @hyperlink["http://docs.racket-lang.org/reference/syntax-model.html#(part._transformer-model)" "Transformer
 Bindings"], has a good explanation and example. Basically, syntax
 has "marks" to preserve lexical scope. This makes your macro behave
