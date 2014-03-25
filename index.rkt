@@ -1518,8 +1518,7 @@ great. Improving it would require even more error code.
 This is the best of both worlds.
 
 The contract is a simple and concise. Even better, it's
-declarative. We say what we want, without needing to spell out what to
-do.
+declarative. We say what we want to happen, not how.
 
 On the other hand the user of our function gets a very detailed error
 message. Plus, the message is in a standard, familiar format.
@@ -1577,8 +1576,8 @@ with many simple examples, followed by an
 section illustrating many real-world scenarios.
 
 Furthermore, everything I'd learned up to this point prepared me to
-appreciate what @racket[syntax-parse] does, and why. That leaves
-the "how" of using it, which seems pretty straightforward, so far.
+appreciate what @racket[syntax-parse] does, and why. The details of
+how to use it seem pretty straightforward, so far.
 
 This might well be a temporary state of me "not knowing what I don't
 know". As I dig in and use it more, maybe I'll discover something
