@@ -1534,8 +1534,8 @@ message. Plus, the message is in a standard, familiar format.
 (misuse 0)
 ]
 
-With respect to error handling, Typed Racket has the same benefits as
-contracts. Good.
+Even better, Typed Racket can catch usage mistakes up-front at compile
+time.
 
 @subsection{Error-handling strategies for macros}
 
@@ -1550,18 +1550,18 @@ macros in our example of @secref["hash.refs"]. And while we're still
 learning how to write macros, we especially don't want more cognitive
 load and obfuscation.
 
-3. Use @racket[syntax/parse]. For macros, this is the equivalent of
+3. Use @racket[syntax-parse]. For macros, this is the equivalent of
 using contracts or types for functions. We can declare that input
 pattern elements must be certain kinds of things, such as an
 identifier. Instead of "types", the kinds are referred to as "syntax
 classes". There are predefined syntax classes, plus we can define our
 own.
 
-@subsection{Using @racket[syntax/parse]}
+@subsection{Using @racket[syntax-parse]}
 
 November 1, 2012: So here's the deal. After writing everything up to
 this point, I sat down to re-read the documentation for
-@racket[syntax/parse]. It was...very understandable. I didn't feel
+@racket[syntax-parse]. It was...very understandable. I didn't feel
 confused.
 
 @codeblock{
@@ -1570,10 +1570,15 @@ Whoa.
 </span>
 }
 
-Why? The documentation is written very well. Also, everything up to
-this point prepared me to appreciate what @racket[syntax/parse] does,
-and why. That leaves the "how" of using it, which seems pretty
-straightforward, so far.
+Why? The documentation has a nice
+@hyperlink["http://docs.racket-lang.org/syntax/stxparse-intro.html" "Introduction"]
+with many simple examples, followed by an
+@hyperlink["http://docs.racket-lang.org/syntax/stxparse-examples.html" "Examples"]
+section illustrating many real-world scenarios.
+
+Furthermore, everything I'd learned up to this point prepared me to
+appreciate what @racket[syntax-parse] does, and why. That leaves
+the "how" of using it, which seems pretty straightforward, so far.
 
 This might well be a temporary state of me "not knowing what I don't
 know". As I dig in and use it more, maybe I'll discover something
