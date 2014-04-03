@@ -447,11 +447,11 @@ input syntax:
 (displayln stx)
 ]
 
-1. We take the original syntax, and use @racket[syntax->datum] to
-change it into a plain Racket @racket[list]:
+1. We take the original syntax, and use @racket[syntax->list] to
+change it into a @racket[list] of syntax objects:
 
 @i[
-(define xs (syntax->datum stx))
+(define xs (syntax->list stx))
 (displayln xs)
 ]
 
