@@ -271,7 +271,7 @@ information functions are:
 @margin-note{@racket[(syntax-source stx)] is returning @racket['eval],
 only becaue of how I'm generating this documentation, using an
 evaluator to run code snippets in Scribble. Normally this would be
-somthing like "my-file.rkt".}
+something like "my-file.rkt".}
 
 @i[
 (syntax-source stx)
