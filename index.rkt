@@ -951,7 +951,7 @@ back.
 
 @subsubsection{Another example}
 
-Finally, here's a variation that accepts an arbitary number of name
+Finally, here's a variation that accepts an arbitrary number of name
 parts to be joined with hyphens:
 
 @i[
@@ -1237,7 +1237,7 @@ messages when used in error. Let's try to do that here.
 
 Not too bad. Of course, the version with error-checking is quite a bit
 longer. Error-checking code generally tends to obscure the logic, and
-does here. Fortuantely we'll soon see how @racket[syntax-parse] can
+does here. Fortunately we'll soon see how @racket[syntax-parse] can
 help mitigate that, in much the same way as contracts in normal
 Racket or types in Typed Racket.
 
@@ -1591,7 +1591,7 @@ But for now I'll focus on improving the previous parts.
 
 @section{References and Acknowledgments}
 
-Eli Barzliay's blog post,
+Eli Barzilay's blog post,
 @hyperlink["http://blog.racket-lang.org/2011/04/writing-syntax-case-macros.html" "Writing
 ‘syntax-case’ Macros"], helped me understand many key details and
 concepts, and inspired me to use a "bottom-up" approach.
