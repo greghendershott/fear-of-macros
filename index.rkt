@@ -269,7 +269,7 @@ Now let's use functions that access the syntax object. The source
 information functions are:
 
 @margin-note{@racket[(syntax-source stx)] is returning @racket['eval],
-only becaue of how I'm generating this documentation, using an
+only because of how I'm generating this documentation, using an
 evaluator to run code snippets in Scribble. Normally this would be
 something like "my-file.rkt".}
 
