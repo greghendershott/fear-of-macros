@@ -1177,17 +1177,16 @@ like JavaScript?
 (require (for-syntax racket/syntax))
 (define-syntax (hash.refs stx)
   (syntax-case stx ()
-    ;; If the optional `default' is missing, assume it's #f.
+    ;; If the optional `default' is missing, use #f.
     [(_ chain)
      #'(hash.refs chain #f)]
     [(_ chain default)
-     (let ([xs (map (lambda (x)
-                      (datum->syntax stx (string->symbol x)))
-                    (regexp-split #rx"\\."
-                                  (symbol->string (syntax->datum #'chain))))])
-       (with-syntax ([h (car xs)]
-                     [ks (cdr xs)])
-         #'(hash-refs h 'ks default)))]))
+     (let* ([chain-str (symbol->string (syntax->datum #'chain))]
+            [ids (for/list ([str (in-list (regexp-split #rx"\\." chain-str))])
+                   (format-id #'chain "~a" str))])
+       (with-syntax ([hash-table (car ids)]
+                     [keys       (cdr ids)])
+         #'(hash-refs hash-table 'keys default)))]))
 ;; Gives us "sugar" to say this:
 (hash.refs js.a.b.c)
 ;; Try finding a key that doesn't exist:
@@ -1208,26 +1207,23 @@ messages when used in error. Let's try to do that here.
   (syntax-case stx ()
     ;; Check for no args at all
     [(_)
-     (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
-                         stx #'chain)]
+     (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx #'chain)]
+    ;; If the optional `default' is missing, use #f.
     [(_ chain)
      #'(hash.refs chain #f)]
     [(_ chain default)
-     ;; Check that chain is a symbol, not e.g. a number or string
-     (unless (symbol? (syntax-e #'chain))
-       (raise-syntax-error #f "Expected (hash.key0[.key1 ...] [default])"
-                           stx #'chain))
-     (let ([xs (map (lambda (x)
-                      (datum->syntax stx (string->symbol x)))
-                    (regexp-split #rx"\\."
-                                  (symbol->string (syntax->datum #'chain))))])
+     (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx #'chain)
+     (let* ([chain-str (symbol->string (syntax->datum #'chain))]
+            [ids (for/list ([str (in-list (regexp-split #rx"\\." chain-str))])
+                   (format-id #'chain "~a" str))])
        ;; Check that we have at least hash.key
-       (unless (and (>= (length xs) 2)
-                    (not (eq? (syntax-e (cadr xs)) '||)))
+       (unless (and (>= (length ids) 2)
+                    (not (eq? (syntax-e (cadr ids)) '||)))
          (raise-syntax-error #f "Expected hash.key" stx #'chain))
-       (with-syntax ([h (car xs)]
-                     [ks (cdr xs)])
-         #'(hash-refs h 'ks default)))]))
+       (with-syntax ([hash-table (car ids)]
+                     [keys       (cdr ids)])
+         #'(hash-refs hash-table 'keys default)))]))
+
 ;; See if we catch each of the misuses
 (hash.refs)
 (hash.refs 0)
