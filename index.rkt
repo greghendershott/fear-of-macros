@@ -213,7 +213,7 @@ which is @tt{#'}:
 (quoted-foo)
 ]
 
-We'll use the #' shorthand from now on.
+We'll use the @tt{#'} shorthand from now on.
 
 Of course, we can emit syntax that is more interesting than a
 string literal. How about returning @racket[(displayln "hi")]?
