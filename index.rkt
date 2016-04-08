@@ -720,7 +720,7 @@ work it out.  The "template" the error message refers to is the
 
 In fact, @racket[syntax-case] can have as many templates as you
 want. The obvious, required template is the final expression supplying
-the output syntax. But you can use @racket[syntax] (a.k.a. #') on a
+the output syntax. But you can use @racket[syntax] (a.k.a. @tt{#'}) on a
 pattern variable. This makes another template, albeit a small, "fun
 size" template. Let's try that:
 
