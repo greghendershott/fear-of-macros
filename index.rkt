@@ -350,7 +350,7 @@ Finally we use @racket[datum->syntax] to convert this back to
 @racket[syntax]:
 
 @i[
-(datum->syntax #f '(values "i" "am" "backwards"))
+(datum->syntax stx '(values "i" "am" "backwards"))
 ]
 
 That's what our transformer function gives back to the Racket
@@ -359,6 +359,10 @@ compiler, and @italic{that} syntax is evaluated:
 @i[
 (values "i" "am" "backwards")
 ]
+
+@margin-note{The first argument of @racket[syntax->datum] contains the lexical
+context information that we want to associate with the @racket[syntax]
+outputted by the transformer.}
 
 @; ----------------------------------------------------------------------------
 
