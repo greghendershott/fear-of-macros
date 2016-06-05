@@ -1212,7 +1212,8 @@ messages when used in error. Let's try to do that here.
     [(_ chain)
      #'(hash.refs chain #f)]
     [(_ chain default)
-     (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx #'chain)
+     (unless (identifier? #'chain)
+       (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx #'chain))
      (let* ([chain-str (symbol->string (syntax->datum #'chain))]
             [ids (for/list ([str (in-list (regexp-split #rx"\\." chain-str))])
                    (format-id #'chain "~a" str))])
