@@ -12,12 +12,14 @@
           (for-label racket/syntax))
 @(define evaluator
    (parameterize ([sandbox-output 'string]
-                  [sandbox-error-output 'string])
+                  [sandbox-error-output 'string]
+                  [sandbox-memory-limit #f])
      (make-evaluator 'racket)))
 
 @(define typed/evaluator
    (parameterize ([sandbox-output 'string]
-                  [sandbox-error-output 'string])
+                  [sandbox-error-output 'string]
+                  [sandbox-memory-limit #f])
      (make-evaluator 'typed/racket)))
 
 @(define-syntax-rule (i body ...)
