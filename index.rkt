@@ -365,6 +365,11 @@ compiler, and @italic{that} syntax is evaluated:
 (values "i" "am" "backwards")
 ]
 
+@margin-note{The first argument of @racket[syntax->datum] contains the lexical
+context information that we want to associate with the @racket[syntax]
+outputted by the transformer. If the first argument is set to @racket[#f] then
+no lexical context will be associated.}
+
 @; ----------------------------------------------------------------------------
 
 @subsection{Compile time vs. run time}
