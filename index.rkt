@@ -32,13 +32,12 @@
 @author[@hyperlink["http://www.greghendershott.com"
                    "Greg Hendershott"]]
 @image["fear-of-macros.jpg"]
+@para{A practical guide to @hyperlink["https://www.racket-lang.org"]{Racket} macros.}
 @para[@smaller{Copyright (c) 2012-@current-year[] by Greg Hendershott. All rights reserved.}]
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
 @para{Feedback and corrections are @hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "welcome here"].}
-
-Contents:
 
 @table-of-contents{}
 
@@ -46,7 +45,8 @@ Contents:
 
 @section{Preface}
 
-I learned Racket after 25 years of mostly using C and C++.
+I learned @hyperlink["https://www.racket-lang.org"]{Racket} after 25
+years of mostly using C and C++.
 
 Some psychic whiplash resulted.
 
