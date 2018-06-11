@@ -25,11 +25,14 @@
 @(define-syntax-rule (i body ...)
    (interaction #:eval evaluator body ...))
 
+@(define (current-year)
+   (number->string (date-year (current-date))))
+
 @title[#:version ""]{Fear of Macros}
 @author[@hyperlink["http://www.greghendershott.com"
                    "Greg Hendershott"]]
 @image["fear-of-macros.jpg"]
-@para[@smaller{Copyright (c) 2012-2014 by Greg Hendershott. All rights reserved.}]
+@para[@smaller{Copyright (c) 2012-@current-year[] by Greg Hendershott. All rights reserved.}]
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
