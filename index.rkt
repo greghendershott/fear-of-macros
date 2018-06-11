@@ -155,6 +155,10 @@ returns syntax. It transforms syntax.
 Here's a transformer function that ignores its input syntax, and
 always outputs syntax for a string literal:
 
+@margin-note{These examples assume @litchar{#lang racket}. If you want
+to try them using @litchar{#lang racket/base}, you'll need to
+@litchar{(require (for-syntax racket/base))}.}
+
 @(let-syntax([syntax (make-element-id-transformer
                       (lambda (stx)
                         #'@racket[syntax]))]) ;print as syntax not #'
