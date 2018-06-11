@@ -1575,12 +1575,6 @@ this point, I sat down to re-read the documentation for
 @racket[syntax-parse]. It was...very understandable. I didn't feel
 confused.
 
-@codeblock{
-<span style='accent: "Keanu-Reeves"'>
-Whoa.
-</span>
-}
-
 Why? The documentation has a nice
 @hyperlink["http://docs.racket-lang.org/syntax/stxparse-intro.html"]{Introduction}
 with many simple examples, followed by an
@@ -1647,36 +1641,3 @@ changed. It's interesting how much of what we already know is
 projected between the lines. My point is, the Racket documentation is
 very good. The @italic{Guide} provides helpful examples and
 tutorials. The @italic{Reference} is very clear and precise.
-
-@; ----------------------------------------------------------------------------
-@; ----------------------------------------------------------------------------
-
-@section{Epilogue}
-
-@centered{
-"Before I had studied Chan (Zen) for thirty years, I saw mountains as
-mountains, and rivers as rivers. When I arrived at a more intimate
-knowledge, I came to the point where I saw that mountains are not
-mountains, and rivers are not rivers. But now that I have got its very
-substance I am at rest. For it's just that I see mountains once again
-as mountains, and rivers once again as rivers"
-
-@smaller{--Buddhist saying originally formulated by Qingyuan Weixin,
-later translated by D.T. Suzuki in his @italic{Essays in Zen
-Buddhism}.}
-}
-
-Translated into Racket:
-
-@racketblock[
-(dynamic-wind (lambda ()
-                (and (eq? 'mountains 'mountains)
-                     (eq? 'rivers 'rivers)))
-              (lambda ()
-                (not (and (eq? 'mountains 'mountains)
-                          (eq? 'rivers 'rivers))))
-              (lambda ()
-                (and (eq? 'mountains 'mountains)
-                     (eq? 'rivers 'rivers))))
-
-]
