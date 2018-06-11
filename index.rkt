@@ -1582,10 +1582,15 @@ Whoa.
 }
 
 Why? The documentation has a nice
-@hyperlink["http://docs.racket-lang.org/syntax/stxparse-intro.html" "Introduction"]
+@hyperlink["http://docs.racket-lang.org/syntax/stxparse-intro.html"]{Introduction}
 with many simple examples, followed by an
-@hyperlink["http://docs.racket-lang.org/syntax/stxparse-examples.html" "Examples"]
+@hyperlink["http://docs.racket-lang.org/syntax/stxparse-examples.html"]{Examples}
 section illustrating many real-world scenarios.
+
+@italic{Update:} Furthermore, Ben Greenman has created a package whose
+docs provide an excellent set of even more
+@hyperlink["http://docs.racket-lang.org/syntax-parse-example/index.html"]{Syntax
+Parse Examples}.
 
 Furthermore, everything I'd learned up to this point prepared me to
 appreciate what @racket[syntax-parse] does, and why. The details of
