@@ -793,7 +793,7 @@ that using an additional, nested @racket[syntax-case]:
 (define-syntax (hyphen-define/wrong1.2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (syntax-case (datum->syntax stx
+     (syntax-case (datum->syntax #'a
                                  (string->symbol (format "~a-~a" #'a #'b)))
                   ()
        [name #'(define (name args ...)
@@ -839,7 +839,7 @@ Instead we want the datum in the syntax objects, such as the symbols
 (define-syntax (hyphen-define/ok1 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (syntax-case (datum->syntax stx
+     (syntax-case (datum->syntax #'a
                                  (string->symbol (format "~a-~a"
                                                          (syntax->datum #'a)
                                                          (syntax->datum #'b))))
@@ -867,7 +867,7 @@ if we need to define more than one pattern variable.
 (define-syntax (hyphen-define/ok2 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (with-syntax ([name (datum->syntax stx
+     (with-syntax ([name (datum->syntax #'a
                                         (string->symbol (format "~a-~a"
                                                                 (syntax->datum #'a)
                                                                 (syntax->datum #'b))))])
@@ -979,17 +979,28 @@ parts to be joined with hyphens:
 (define-syntax (hyphen-define* stx)
   (syntax-case stx ()
     [(_ (names ...) (args ...) body0 body ...)
-     (let* ([names/sym (map syntax-e (syntax->list #'(names ...)))]
-            [names/str (map symbol->string names/sym)]
-            [name/str (string-join names/str "-")]
-            [name/sym (string->symbol name/str)])
-       (with-syntax ([name (datum->syntax stx name/sym)])
+     (let ([name-stxs (syntax->list #'(names ...))])
+       (with-syntax ([name (datum->syntax (car name-stxs)
+                                          (string->symbol
+                                           (string-join (for/list ([name-stx name-stxs])
+                                                          (symbol->string
+                                                           (syntax-e name-stx)))
+                                                        "-")))])
          #`(define (name args ...)
              body0 body ...)))]))
 (hyphen-define* (foo bar baz) (v) (* 2 v))
 (foo-bar-baz 50)
 ]
 
+Just as when we used @racket[format-id], when using
+@racket[datum->syntax] we're being careful with the first,
+@racket[lctx] argument. We want the identifier we create to use the
+lexical context of an identifier provided to the macro by the user. In
+this case, the user's identifiers are in the @racket[(names ...)]
+template variable. We change this from one @racket[syntax] into a
+@racket[list] of @racket[syntax]es. The first element we use for the
+lexical context. Then of course we'll use all the elements to form the
+hyphenated identifier.
 
 To review:
 
