@@ -943,7 +943,7 @@ succinctly than what we did above:
 (define-syntax (hyphen-define/ok3 stx)
   (syntax-case stx ()
     [(_ a b (args ...) body0 body ...)
-     (with-syntax ([name (format-id stx "~a-~a" #'a #'b)])
+     (with-syntax ([name (format-id #'a "~a-~a" #'a #'b)])
        #'(define (name args ...)
            body0 body ...))]))
 (hyphen-define/ok3 bar baz () #t)
@@ -953,6 +953,16 @@ succinctly than what we did above:
 Using @racket[format-id] is convenient as it handles the tedium of
 converting from syntax to symbol datum to string ... and all the way
 back.
+
+The first argument of @racket[format-id], @racket[lctx], is the
+lexical context of the identifier that will be created. You almost
+never want to supply @racket[stx] --- the overall chunk of syntax that
+the macro transforms. Instead you want to supply some more-specific
+bit of syntax, such as an identifier that the user has provided to the
+macro. In this example, we're using @racket[#'a]. The resulting
+identifier will have the same scope as that which the user provided.
+This is more likely to behave as the user expects, especially when our
+macro is composed with other macros.
 
 @subsubsection{Another example}
 
@@ -1037,7 +1047,7 @@ field name).}
 (define-syntax (our-struct stx)
   (syntax-case stx ()
     [(_ id (fields ...))
-     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+     (with-syntax ([pred-id (format-id #'id "~a?" #'id)])
        #`(begin
            ;; Define a constructor.
            (define (id fields ...)
@@ -1049,7 +1059,7 @@ field name).}
            ;; Define an accessor for each field.
            #,@(for/list ([x (syntax->list #'(fields ...))]
                          [n (in-naturals 1)])
-                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                (with-syntax ([acc-id (format-id #'id "~a-~a" #'id x)]
                               [ix n])
                   #`(define (acc-id v)
                       (unless (pred-id v)
@@ -1101,7 +1111,7 @@ Let's add a guard expression to our clause:
                  (unless (identifier? x)
                    (raise-syntax-error #f "not an identifier" stx x)))
                (cons #'id (syntax->list #'(fields ...))))
-     (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+     (with-syntax ([pred-id (format-id #'id "~a?" #'id)])
        #`(begin
            ;; Define a constructor.
            (define (id fields ...)
@@ -1113,7 +1123,7 @@ Let's add a guard expression to our clause:
            ;; Define an accessor for each field.
            #,@(for/list ([x (syntax->list #'(fields ...))]
                          [n (in-naturals 1)])
-                (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                (with-syntax ([acc-id (format-id #'id "~a-~a" #'id x)]
                               [ix n])
                   #`(define (acc-id v)
                       (unless (pred-id v)
