@@ -11,6 +11,7 @@ because I don't.
 
 - [Multiple HTML files](http://www.greghendershott.com/fear-of-macros)
 - [One big HTML file](http://www.greghendershott.com/fear-of-macros/all.html)
+- [One big PDF file](http://www.greghendershott.com/fear-of-macros/all.pdf)
 
 ## Feeback
 
