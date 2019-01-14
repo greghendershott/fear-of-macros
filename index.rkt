@@ -336,7 +336,7 @@ result to evaluate nicely.  Try
 (reverse-me "backwards" "am" "i" values)
 ]
 
-Understand Yoda, can we. Great, but how does this work?
+Understand Yoda, we can. Great, but how does this work?
 
 First we take the input syntax, and give it to
 @racket[syntax->datum]. This converts the syntax into a plain old
@@ -747,7 +747,7 @@ size" template. Let's try that:
            body0 body ...))]))
 ]
 
-No more error---good! Let's try to use it:
+No more errors---good! Let's try to use it:
 
 @i[
 (hyphen-define/wrong1.1 foo bar () #t)
@@ -965,7 +965,7 @@ back.
 
 The first argument of @racket[format-id], @racket[lctx], is the
 lexical context of the identifier that will be created. You almost
-never want to supply @racket[stx] --- the overall chunk of syntax that
+never want to supply @racket[stx]---the overall chunk of syntax that
 the macro transforms. Instead you want to supply some more-specific
 bit of syntax, such as an identifier that the user has provided to the
 macro. In this example, we're using @racket[#'a]. The resulting
