@@ -1465,7 +1465,7 @@ concise, especially when there are multiple body forms:
   (define (inc)
     (set! x (+ x 1)))
   (define (dec)
-    (set! x (- x 1)))
+    (set! x (- 1 x)))
   (define (get)
     x))
 ]
@@ -1479,7 +1479,7 @@ The splicing variation is more convenient than the usual way:
     (values (lambda ()  ;inc
               (set! x (+ 1 x)))
             (lambda ()  ;dec
-              (set! x (- 1 x)))
+              (set! x (- x 1)))
             (lambda ()  ;get
               x))))
 )
