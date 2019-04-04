@@ -1,47 +1,35 @@
-SCRBL=index.rkt
+scrbl := index.rkt
 
-all: publish
+html := /home/greg/src/blog/src/static/fear-of-macros
+
+all: html
 
 clean:
-	rm -rf html
+	rm -rf $(html)
 
 html: html-single html-multi
 	racket add-to-head.rkt
 
-html-single: $(SCRBL)
+html-single: $(scrbl)
 	raco scribble \
 		--html \
-		--dest html \
+		--dest $(html) \
 		--dest-name all.html \
 		++style gh.css \
 		++main-xref-in \
 		--redirect-main http://docs.racket-lang.org/ \
 		\
-		$(SCRBL)
+		$(scrbl)
 
-html-multi: $(SCRBL)
+## TO-DO: Fix so scribble builds directly to $(html) not to
+## fear-of-macros/subdir.
+html-multi: $(scrbl)
 	raco scribble \
 		--htmls \
-		--dest-name html \
+		--dest-name $(html) \
 		++style gh.css \
 		++main-xref-in \
 		--redirect-main http://docs.racket-lang.org/ \
 		\
-		$(SCRBL)
-
-pages:
-	@(git branch -v | grep -q gh-pages || (echo local gh-pages branch missing; false))
-	@echo
-	@git branch -av | grep gh-pages
-	@echo
-	@(echo 'Is the branch up to date? Press enter to continue.'; read dummy)
-	git clone -b gh-pages . pages
-
-publish: html pages
-	rm -rf pages/*
-	cp -r html/. pages/.
-	(cd pages; git add -A)
-	-(cd pages; git commit -m "Update $$(date +%Y%m%d%H%M%S)")
-	(cd pages; git push origin gh-pages)
-	rm -rf pages
-	git push origin gh-pages
+		$(scrbl)
+	cp fear-of-macros/* $(html)/
