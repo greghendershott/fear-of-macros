@@ -1477,9 +1477,9 @@ The splicing variation is more convenient than the usual way:
 (define-values (inc dec get)
   (let ([x 0])
     (values (lambda ()  ;inc
-              (set! x (+ 1 x)))
+              (set! x (+ x 1)))
             (lambda ()  ;dec
-              (set! x (- 1 x)))
+              (set! x (- x 1)))
             (lambda ()  ;get
               x))))
 )
