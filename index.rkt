@@ -990,7 +990,7 @@ parts to be joined with hyphens:
                                                           (symbol->string
                                                            (syntax-e name-stx)))
                                                         "-")))])
-         #`(define (name args ...)
+         #'(define (name args ...)
              body0 body ...)))]))
 (hyphen-define* (foo bar baz) (v) (* 2 v))
 (foo-bar-baz 50)
