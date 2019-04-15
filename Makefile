@@ -1,11 +1,13 @@
 scrbl := index.rkt
 
-html := /home/greg/src/blog/src/static/fear-of-macros
+www := fear-of-macros
+
+.PHONY: all clean html html-single html-multi
 
 all: html
 
 clean:
-	rm -rf $(html)
+	rm -rf $(www)
 
 html: html-single html-multi
 	racket add-to-head.rkt
@@ -13,23 +15,31 @@ html: html-single html-multi
 html-single: $(scrbl)
 	raco scribble \
 		--html \
-		--dest $(html) \
+		--dest $(www) \
 		--dest-name all.html \
 		++style gh.css \
 		++main-xref-in \
-		--redirect-main http://docs.racket-lang.org/ \
+		--redirect-main https://docs.racket-lang.org/ \
 		\
 		$(scrbl)
 
-## TO-DO: Fix so scribble builds directly to $(html) not to
-## fear-of-macros/subdir.
 html-multi: $(scrbl)
 	raco scribble \
 		--htmls \
-		--dest-name $(html) \
+		--dest-name $(www) \
 		++style gh.css \
 		++main-xref-in \
-		--redirect-main http://docs.racket-lang.org/ \
+		--redirect-main https://docs.racket-lang.org/ \
 		\
 		$(scrbl)
-	cp fear-of-macros/* $(html)/
+
+######################################################################
+# S3 bucket deploy
+
+aws  := aws --profile greg
+dest := s3://www.greghendershott.com/fear-of-macros/
+
+.PHONY: deploy
+
+deploy:
+	$(aws) s3 sync --no-follow-symlinks $(www) $(dest)
