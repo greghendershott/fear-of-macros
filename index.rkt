@@ -211,10 +211,10 @@ syntax. Everything we do with macros, will be built on top of this
 basic idea. It's not magic.
 
 Speaking of shorthand, there is also a shorthand for @racket[syntax],
-which is @literal{#'}:
+which is @litchar{#'}:
 
-@margin-note{@literal{#'} is short for  @racket[syntax] much like
-@literal{'} is short for @racket[quote].}
+@margin-note{@litchar{#'} is short for  @racket[syntax] much like
+@litchar{'} is short for @racket[quote].}
 
 @i[
 (define-syntax (quoted-foo stx)
@@ -222,7 +222,7 @@ which is @literal{#'}:
 (quoted-foo)
 ]
 
-We'll use the @literal{#'} shorthand from now on.
+We'll use the @litchar{#'} shorthand from now on.
 
 Of course, we can emit syntax that is more interesting than a
 string literal. How about returning @racket[(displayln "hi")]?
@@ -734,7 +734,7 @@ work it out.  The "template" the error message refers to is the
 
 In fact, @racket[syntax-case] can have as many templates as you
 want. The obvious, required template is the final expression supplying
-the output syntax. But you can use @racket[syntax] (a.k.a. @literal{#'}) on a
+the output syntax. But you can use @racket[syntax] (a.k.a. @litchar{#'}) on a
 pattern variable. This makes another template, albeit a small, "fun
 size" template. Let's try that:
 
@@ -1011,7 +1011,7 @@ To review:
 @itemize[
 
   @item{You can't use a pattern variable outside of a template. But
-you can use @racket[syntax] or @literal{#'} on a pattern variable to make
+you can use @racket[syntax] or @litchar{#'} on a pattern variable to make
 an ad hoc, "fun size" template.}
 
   @item{If you want to munge pattern variables for use in the
