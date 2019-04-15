@@ -12,6 +12,6 @@ because I don't.
 - [Multiple HTML files](https://www.greghendershott.com/fear-of-macros/index.html)
 - [One big HTML file](https://www.greghendershott.com/fear-of-macros/all.html)
 
-## Feeback
+## Feedback
 
 Feedback is welcome; please use Issues page here on GitHub.
