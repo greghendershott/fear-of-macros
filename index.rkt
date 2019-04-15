@@ -1512,7 +1512,7 @@ misuse.
 )
 
 The problem is that the resulting error message will be confusing. Our
-user thinks they're calling @racket[misuse], but is getting an error
+user thinks they're calling @racket[misuse], but they're getting an error
 message from @racket[string-append].  In this simple example they
 could probably guess what's happening, but in most cases they won't.
 
