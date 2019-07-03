@@ -1242,7 +1242,7 @@ messages when used in error. Let's try to do that here.
   (syntax-case stx ()
     ;; Check for no args at all
     [(_)
-     (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx #'chain)]
+     (raise-syntax-error #f "Expected hash.key0[.key1 ...] [default]" stx)]
     ;; If the optional `default' is missing, use #f.
     [(_ chain)
      #'(hash.refs chain #f)]
