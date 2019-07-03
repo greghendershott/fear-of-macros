@@ -38,8 +38,10 @@ html-multi: $(scrbl)
 
 aws  := aws --profile greg
 dest := s3://www.greghendershott.com/fear-of-macros/
+cfid := E2LPR1YW069SHG
 
 .PHONY: deploy
 
 deploy:
 	$(aws) s3 sync --no-follow-symlinks $(www) $(dest)
+	$(aws) cloudfront create-invalidation --distribution-id $(cfid) --paths "/fear-of-macros/*"
