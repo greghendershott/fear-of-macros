@@ -37,7 +37,8 @@
 @para[@smaller["Last updated "
                (parameterize ([date-display-format 'iso-8601])
                  (date->string (current-date) #t))]]
-@para{Feedback and corrections are @hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "welcome here"].}
+@para{@hyperlink["https://github.com/greghendershott/fear-of-macros/issues" "Feedback and corrections"].}
+@para{@hyperlink["https://github.com/users/greghendershott/sponsorship" "Sponsor my work"] or @hyperlink["https://www.paypal.me/greghendershott" "donate"].}
 
 @table-of-contents{}
 
