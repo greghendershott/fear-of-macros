@@ -101,7 +101,7 @@ But if we start there, you're likely to feel overwhelmed by concepts
 and terminology, and get very confused. I did.
 
 1. Instead let's start with the basics: A syntax object and a function
-to change it---a "transformer". We'll work at that level for awhile to
+to change it---a "transformer". We'll work at that level for a while to
 get comfortable and to de-mythologize this whole macro business.
 
 2. Soon we'll realize that pattern-matching would make life
@@ -1550,7 +1550,7 @@ great. Improving it would require even more error code.
 
 This is the best of both worlds.
 
-The contract is a simple and concise. Even better, it's
+The contract is simple and concise. Even better, it's
 declarative. We say what we want to happen, not how.
 
 On the other hand the user of our function gets a very detailed error
